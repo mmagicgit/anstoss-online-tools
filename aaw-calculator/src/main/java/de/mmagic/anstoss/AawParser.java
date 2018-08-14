@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 class AawParser {
 
@@ -26,26 +25,17 @@ class AawParser {
             if (file.endsWith(".json")) {
                 Gson gson = new Gson();
                 JsonPlayer[] jsonPlayerArray = gson.fromJson(new String(Files.readAllBytes(Paths.get(file)), Charsets.ISO_8859_1), JsonPlayer[].class);
-
                 Arrays.asList(jsonPlayerArray).forEach(jsonPlayer -> {
                     Player player = findOrCreatePlayer(playerList, jsonPlayer.getName());
-                    int percent = Integer.parseInt(jsonPlayer.getSchnelligkeit()[0].replaceAll("%", "").trim());
-                    player.data.put("Schnelligkeit", new Aaw(percent, jsonPlayer.getSchnelligkeit()[1]));
-                    percent = Integer.parseInt(jsonPlayer.getZweikampf()[0].replaceAll("%", "").trim());
-                    player.data.put("Zweikampf", new Aaw(percent, jsonPlayer.getZweikampf()[1]));
-                    percent = Integer.parseInt(jsonPlayer.getKopfball()[0].replaceAll("%", "").trim());
-                    player.data.put("Kopfball", new Aaw(percent, jsonPlayer.getKopfball()[1]));
-                    percent = Integer.parseInt(jsonPlayer.getSchusskraft()[0].replaceAll("%", "").trim());
-                    player.data.put("Schusskraft", new Aaw(percent, jsonPlayer.getSchusskraft()[1]));
-                    percent = Integer.parseInt(jsonPlayer.getSchussgenauigkeit()[0].replaceAll("%", "").trim());
-                    player.data.put("Schussgenauigkeit", new Aaw(percent, jsonPlayer.getSchussgenauigkeit()[1]));
-                    percent = Integer.parseInt(jsonPlayer.getTechnik()[0].replaceAll("%", "").trim());
-                    player.data.put("Technik", new Aaw(percent, jsonPlayer.getTechnik()[1]));
-                    percent = Integer.parseInt(jsonPlayer.getSpielintelligenz()[0].replaceAll("%", "").trim());
-                    player.data.put("Spielintelligenz", new Aaw(percent, jsonPlayer.getSpielintelligenz()[1]));
+                    addData(player, jsonPlayer.getSchnelligkeit(), "Schnelligkeit");
+                    addData(player, jsonPlayer.getZweikampf(), "Zweikampf");
+                    addData(player, jsonPlayer.getKopfball(), "Kopfball");
+                    addData(player, jsonPlayer.getSchusskraft(), "Schusskraft");
+                    addData(player, jsonPlayer.getSchusskraft(), "Schussgenauigkeit");
+                    addData(player, jsonPlayer.getTechnik(), "Technik");
+                    addData(player, jsonPlayer.getSpielintelligenz(), "Spielintelligenz");
                     playerList.add(player);
                 });
-
                 continue;
             }
 
@@ -83,6 +73,11 @@ class AawParser {
             });
         }
         return playerList;
+    }
+
+    private void addData(Player player, String[] data, String key) {
+        int percent2 = Integer.parseInt(data[0].replaceAll("%", "").trim());
+        player.data.put(key, new Aaw(percent2, data[1]));
     }
 
     private Player findOrCreatePlayer(List<Player> playerList, String name) {
