@@ -26,7 +26,8 @@ class AawParser {
                 Gson gson = new Gson();
                 JsonPlayer[] jsonPlayerArray = gson.fromJson(new String(Files.readAllBytes(Paths.get(file)), Charsets.ISO_8859_1), JsonPlayer[].class);
                 Arrays.asList(jsonPlayerArray).forEach(jsonPlayer -> {
-                    Player player = findOrCreatePlayer(playerList, jsonPlayer.getName());
+                    String name = jsonPlayer.getName();
+                    Player player = findOrCreatePlayer(playerList, name);
                     addData(player, jsonPlayer.getSchnelligkeit(), "Schnelligkeit");
                     addData(player, jsonPlayer.getZweikampf(), "Zweikampf");
                     addData(player, jsonPlayer.getKopfball(), "Kopfball");
@@ -34,11 +35,10 @@ class AawParser {
                     addData(player, jsonPlayer.getSchusskraft(), "Schussgenauigkeit");
                     addData(player, jsonPlayer.getTechnik(), "Technik");
                     addData(player, jsonPlayer.getSpielintelligenz(), "Spielintelligenz");
-                    playerList.add(player);
+                    addPlayerIfNew(playerList, name, player);
                 });
                 continue;
             }
-
 
             Document document = Jsoup.parse(new File(file), StandardCharsets.ISO_8859_1.name());
             Elements tbodyElements = document.getElementsByTag("tbody");
@@ -69,10 +69,16 @@ class AawParser {
                     int gesamtAsInteger = Integer.valueOf(gesamt.replaceAll("%", "").trim());
                     player.data.put(text, new Aaw(gesamtAsInteger, upOrDown));
                 });
-                playerList.add(player);
+                addPlayerIfNew(playerList, name, player);
             });
         }
         return playerList;
+    }
+
+    private void addPlayerIfNew(List<Player> playerList, String name, Player player) {
+        if (playerList.stream().noneMatch(p -> name.equals(p.name))) {
+            playerList.add(player);
+        }
     }
 
     private void addData(Player player, String[] data, String key) {
