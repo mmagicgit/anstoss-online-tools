@@ -11,18 +11,18 @@ class RangeCalculator {
         int to = 99;
         for (Aaw aaw : aaws) {
             if (aaw.upDown.equals("+1")) {
-                from = 0;
-                to = aaw.percent - 1;
+                from = Math.max(0, from + aaw.percent - 100);
+                to = to + aaw.percent - 100;
                 continue;
             }
             if (aaw.upDown.equals("-1")) {
-                from = 100 + aaw.percent;
-                to = 99;
+                from = 100 + from + aaw.percent;
+                to = Math.min(99, 100 + aaw.percent + to);
                 continue;
             }
             if (aaw.percent >= 0) {
                 from = from + aaw.percent;
-                to = Math.min(to + aaw.percent, 99);
+                to = Math.min(99, to + aaw.percent);
             } else {
                 from = 0;
                 to = to + aaw.percent;
