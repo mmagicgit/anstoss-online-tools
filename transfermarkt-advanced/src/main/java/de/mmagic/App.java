@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.mmagic.AnstossOnlineHttp.BASE_URL;
+
 public class App {
 
     private static final List<String> positions = Arrays.asList("LIB", "MD", "LV", "ZM", "RM", "ST");
@@ -35,21 +37,29 @@ public class App {
             HttpResponse<String> pageResponse = http.get(pageLink);
             Document pageDocument = Jsoup.parse(pageResponse.body(), StandardCharsets.ISO_8859_1.name());
 
-            Elements table = pageDocument.select("table.daten_tabelle [href*=spieler]");
-            for (Element playerElement : table) {
-                String playerLink = playerElement.attr("href");
+            Elements rows = pageDocument.select("table.daten_tabelle tr:gt(0)");
+            for (Element row : rows) {
+                String position = row.select("td:eq(0)").text();
+                String name = row.select("td:eq(1)").text();
+                String power = row.select("td:eq(2)").text();
+                String age = row.select("td:eq(4)").text();
+                String country = row.select("td:eq(5)").attr("title");
+                String cash = row.select("td:eq(7)").text();
+                String playerLink = row.select("[href*=spieler]").attr("href");
                 String playerId = playerLink.replace("?do=spieler;spieler_id=", "").replace("#", "");
                 String aawLink = "content/getContent.php?dyn=transfers/aaw;spieler_id=" + playerId;
                 HttpResponse<String> aawResponse = http.get(aawLink);
                 Document aawDocument = Jsoup.parse(aawResponse.body(), StandardCharsets.ISO_8859_1.name());
                 Elements aaws = aawDocument.select("tr.hide");
 
+                List<String> result = Arrays.asList(BASE_URL + playerLink, age, position, power, name, country, cash);
+
                 aaws.stream()
                         .map(tr -> tr.select("td:eq(4)").eachText())
                         .flatMap(Collection::stream)
                         .map(percent -> percent.replace("%", "").trim())
                         .filter(percent -> percent.length() > 1)
-                        .findFirst().ifPresent(s -> System.out.println(AnstossOnlineHttp.BASE_URL + playerLink));
+                        .findFirst().ifPresent(s -> System.out.println(String.join("\t", result)));
             }
         }
 
