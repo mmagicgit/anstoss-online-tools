@@ -1,0 +1,22 @@
+<div class="center" *ngIf="players.length == 0"><mat-spinner></mat-spinner></div>
+
+<table *ngIf="players.length != 0" matSort (matSortChange)="sortData($event)">
+  <tr>
+    <th mat-sort-header="position">Position</th>
+    <th mat-sort-header="name">Name</th>
+    <th mat-sort-header="strength">Stärke</th>
+    <th mat-sort-header="age">Alter</th>
+    <th mat-sort-header="country">Land</th>
+    <th mat-sort-header="price">Preis</th>
+  </tr>
+
+  <tr *ngFor="let player of sortedData">
+    <td>{{player.position}}</td>
+    <td><a href="https://www.anstoss-online.de/?do=spieler;spieler_id={{player.id}}#">{{player.name}}</a></td>
+    <td style="text-align:center">{{player.strength | number:'1.1-1':'en-US'}}</td>
+    <td style="text-align:center">{{player.age}}</td>
+    <td>{{player.country}}</td>
+    <td style="text-align:right">{{player.price | number}}</td>
+  </tr>
+
+</table>
