@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class AawParser {
 
@@ -22,24 +23,6 @@ class AawParser {
         List<Player> playerList = new ArrayList<>();
 
         for (String file : path) {
-            if (file.endsWith(".json")) {
-                Gson gson = new Gson();
-                JsonPlayer[] jsonPlayerArray = gson.fromJson(new String(Files.readAllBytes(Paths.get(file)), Charsets.ISO_8859_1), JsonPlayer[].class);
-                Arrays.asList(jsonPlayerArray).forEach(jsonPlayer -> {
-                    String name = jsonPlayer.getName();
-                    Player player = findOrCreatePlayer(playerList, name);
-                    addData(player, jsonPlayer.getSchnelligkeit(), "Schnelligkeit");
-                    addData(player, jsonPlayer.getZweikampf(), "Zweikampf");
-                    addData(player, jsonPlayer.getKopfball(), "Kopfball");
-                    addData(player, jsonPlayer.getSchusskraft(), "Schusskraft");
-                    addData(player, jsonPlayer.getSchusskraft(), "Schussgenauigkeit");
-                    addData(player, jsonPlayer.getTechnik(), "Technik");
-                    addData(player, jsonPlayer.getSpielintelligenz(), "Spielintelligenz");
-                    addPlayerIfNew(playerList, name, player);
-                });
-                continue;
-            }
-
             Document document = Jsoup.parse(new File(file), StandardCharsets.ISO_8859_1.name());
             Elements tbodyElements = document.getElementsByTag("tbody");
             tbodyElements.remove(0);
@@ -50,6 +33,7 @@ class AawParser {
             tbodyElements.remove(tbodyElements.size() - 1);
             tbodyElements.remove(tbodyElements.size() - 1);
 
+            List<String> playerNames = new ArrayList<>();
             tbodyElements.forEach(element -> {
                 String name = element.getElementsByTag("a").text();
                 System.out.println("\n" + name);
@@ -70,7 +54,12 @@ class AawParser {
                     player.data.put(text, new Aaw(gesamtAsInteger, upOrDown));
                 });
                 addPlayerIfNew(playerList, name, player);
+                playerNames.add(player.name);
             });
+            List<Player> playersToRemove = playerList.stream()
+                    .filter(player -> !playerNames.contains(player.name))
+                    .collect(Collectors.toList());
+            playerList.removeAll(playersToRemove);
         }
         return playerList;
     }
@@ -79,11 +68,6 @@ class AawParser {
         if (playerList.stream().noneMatch(p -> name.equals(p.name))) {
             playerList.add(player);
         }
-    }
-
-    private void addData(Player player, String[] data, String key) {
-        int percent2 = Integer.parseInt(data[0].replaceAll("%", "").trim());
-        player.data.put(key, new Aaw(percent2, data[1]));
     }
 
     private Player findOrCreatePlayer(List<Player> playerList, String name) {
