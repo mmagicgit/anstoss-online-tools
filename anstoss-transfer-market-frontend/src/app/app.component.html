@@ -1,63 +1,22 @@
-{{errorMessage}}
-<div class="center" *ngIf="dataSource.data.length == 0 && errorMessage == null"><mat-spinner></mat-spinner></div>
+<div class="center" *ngIf="players.length == 0"><mat-spinner></mat-spinner></div>
 
-<!--<table *ngIf="players.length != 0" matSort (matSortChange)="sortData($event)">-->
-  <!--<tr>-->
-    <!--<th mat-sort-header="position">Position</th>-->
-    <!--<th mat-sort-header="name">Name</th>-->
-    <!--<th mat-sort-header="strength">Stärke</th>-->
-    <!--<th mat-sort-header="age">Alter</th>-->
-    <!--<th mat-sort-header="country">Land</th>-->
-    <!--<th mat-sort-header="price">Preis</th>-->
-  <!--</tr>-->
+<table *ngIf="players.length != 0" matSort (matSortChange)="sortData($event)">
+  <tr>
+    <th mat-sort-header="position">Position</th>
+    <th mat-sort-header="name">Name</th>
+    <th mat-sort-header="strength">Stärke</th>
+    <th mat-sort-header="age">Alter</th>
+    <th mat-sort-header="country">Land</th>
+    <th mat-sort-header="price">Preis</th>
+  </tr>
 
-  <!--<tr *ngFor="let player of sortedData">-->
-    <!--<td>{{player.position}}</td>-->
-    <!--<td><a href="https://www.anstoss-online.de/?do=spieler;spieler_id={{player.id}}#">{{player.name}}</a></td>-->
-    <!--<td style="text-align:center">{{player.strength | number:'1.1-1':'en-US'}}</td>-->
-    <!--<td style="text-align:center">{{player.age}}</td>-->
-    <!--<td>{{player.country}}</td>-->
-    <!--<td style="text-align:right">{{player.price | number}}</td>-->
-  <!--</tr>-->
+  <tr *ngFor="let player of sortedData">
+    <td>{{player.position}}</td>
+    <td><a href="https://www.anstoss-online.de/?do=spieler;spieler_id={{player.id}}#">{{player.name}}</a></td>
+    <td style="text-align:center">{{player.strength | number:'1.1-1':'en-US'}}</td>
+    <td style="text-align:center">{{player.age}}</td>
+    <td>{{player.country}}</td>
+    <td style="text-align:right">{{player.price | number}}</td>
+  </tr>
 
-<!--</table>-->
-
-
-<!--<ng-template [ngIf]="dataSource.data.length != 0">-->
-<mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8" *ngIf="dataSource.data.length != 0 && errorMessage == null">
-
-  <ng-container matColumnDef="position">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Position </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-    <mat-cell *matCellDef="let element"> <a class="md-accent" href="https://www.anstoss-online.de/?do=spieler;spieler_id={{element.id}}#">{{element.name}}</a> </mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="strength">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Stärke </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.strength  | number:'1.1-1':'en-US'}} </mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="age">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Alter </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.age}} </mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="country">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Land </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.country}} </mat-cell>
-  </ng-container>
-
-  <ng-container matColumnDef="price">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Preis </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.price | number}} </mat-cell>
-  </ng-container>
-
-  <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-
-</mat-table>
-<!--</ng-template>-->
+</table>

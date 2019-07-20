@@ -6,14 +6,3 @@
   transform: translate(-50%, -50%);
 }
 
-mat-sort-header-sorted {
-  color: black;
-}
-
-mat-header-cell, mat-cell {
-  justify-content: center;
-  /*flex: 0 0 200px;*/
-  /*border-bottom-width: 1px;*/
-  /*border-bottom-style: solid;*/
-  /*border-bottom-color: lightgrey;*/
-}
