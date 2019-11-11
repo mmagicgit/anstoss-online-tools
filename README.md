@@ -1,2 +1,2 @@
 # anstoss-online-tools
-Simple range calculation for Anstoss Online
+Some simple tools for Anstoss Online
