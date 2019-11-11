@@ -11,6 +11,7 @@ import {environment} from "../environments/environment";
 })
 export class AppComponent {
 
+  errorMessage: string = null;
   players: Player[] = [];
   sortedData: Player[] = [];
 
@@ -19,7 +20,8 @@ export class AppComponent {
       players => {
         this.players = players;
         this.sortedData = this.players.slice();
-      }
+      },
+      () => this.errorMessage = "Server error or backend not reachable"
     );
   }
 
@@ -45,6 +47,8 @@ export class AppComponent {
           return compare(a.country, b.country, isAsc);
         case 'price':
           return compare(a.price, b.price, isAsc);
+        case 'days':
+          return compare(a.days, b.days, isAsc);
         default:
           return 0;
       }

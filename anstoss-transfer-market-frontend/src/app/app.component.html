@@ -1,4 +1,5 @@
-<div class="center" *ngIf="players.length == 0"><mat-spinner></mat-spinner></div>
+{{errorMessage}}
+<div class="center" *ngIf="players.length == 0 && errorMessage == null"><mat-spinner></mat-spinner></div>
 
 <table *ngIf="players.length != 0" matSort (matSortChange)="sortData($event)">
   <tr>
@@ -8,6 +9,7 @@
     <th mat-sort-header="age">Alter</th>
     <th mat-sort-header="country">Land</th>
     <th mat-sort-header="price">Preis</th>
+    <th mat-sort-header="days">Tage</th>
   </tr>
 
   <tr *ngFor="let player of sortedData">
@@ -17,6 +19,7 @@
     <td style="text-align:center">{{player.age}}</td>
     <td>{{player.country}}</td>
     <td style="text-align:right">{{player.price | number}}</td>
+    <td style="text-align:right">{{player.days}}</td>
   </tr>
 
 </table>

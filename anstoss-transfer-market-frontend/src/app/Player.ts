@@ -6,4 +6,5 @@ export interface Player {
   position: string;
   country: string;
   price: number;
+  days:number;
 }
