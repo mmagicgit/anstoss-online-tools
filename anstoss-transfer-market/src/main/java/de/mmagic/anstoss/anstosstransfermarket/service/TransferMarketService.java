@@ -21,9 +21,9 @@ public class TransferMarketService {
 
     private static final List<String> positions = Arrays.asList("LIB", "MD", "LV", "RV", "ZM", "RM", "LM", "ST");
 
-    @Value("${user}")
+    @Value("${ANSTOSS_USER}")
     private String user;
-    @Value("${password}")
+    @Value("${ANSTOSS_PW}")
     private String password;
 
     public List<Player> search() {
@@ -32,7 +32,7 @@ public class TransferMarketService {
 
         String positionQueryParameters = positions.stream().map(p -> "idealpos[]=" + p).collect(Collectors.joining(";"));
 
-        String searchUrl = String.format("content/getContent.php?dyn=transfers/spielersuche;erg=1;;%s;wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=&staerke_max=&alter_min=&alter_max=24&spielerboerse=1", positionQueryParameters);
+        String searchUrl = String.format("content/getContent.php?dyn=transfers/spielersuche;erg=1;;%s;wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=&staerke_max=&alter_min=&alter_max=25&spielerboerse=1", positionQueryParameters);
         HttpResponse<String> searchResponse = http.get(searchUrl);
         Document searchDocument = Jsoup.parse(searchResponse.body(), StandardCharsets.ISO_8859_1.name());
 
@@ -54,21 +54,21 @@ public class TransferMarketService {
                 String age = row.select("td:eq(4)").text();
                 String country = row.select("td:eq(5) img").attr("title");
                 String cash = row.select("td:eq(7)").text().replaceAll("\\.", "");
+                String days = row.select("td:eq(8)").text();
                 String playerLink = row.select("[href*=spieler]").attr("href");
                 String playerId = playerLink.replace("?do=spieler;spieler_id=", "").replace("#", "");
                 String aawLink = "content/getContent.php?dyn=transfers/aaw;spieler_id=" + playerId;
                 HttpResponse<String> aawResponse = http.get(aawLink);
                 Document aawDocument = Jsoup.parse(aawResponse.body(), StandardCharsets.ISO_8859_1.name());
                 Elements aaws = aawDocument.select("tr.hide");
-
-                List<String> result = Arrays.asList(AnstossOnlineHttp.BASE_URL + playerLink, age, position, power, cash, name + " (" + country + ")");
+                aaws.remove(aaws.last());
 
                 aaws.stream()
-                        .map(tr -> tr.select("td:eq(4)").eachText())
+                        .map(tr -> tr.select("td:lt(5)").eachText())
                         .flatMap(Collection::stream)
                         .map(percent -> percent.replace("%", "").trim())
-                        .filter(percent -> percent.length() > 1)
-                        .findFirst().ifPresent(s -> players.add(new Player(Integer.valueOf(playerId), name, Integer.valueOf(age), Double.valueOf(power.replace(",", ".")), position, country, Long.valueOf(cash))));
+                        .filter(percent -> Integer.parseInt(percent) >= 15)
+                        .findFirst().ifPresent(s -> players.add(new Player(Integer.valueOf(playerId), name, Integer.valueOf(age), Double.valueOf(power.replace(",", ".")), position, country, Long.valueOf(cash), Integer.valueOf(days))));
             }
         }
         return players;

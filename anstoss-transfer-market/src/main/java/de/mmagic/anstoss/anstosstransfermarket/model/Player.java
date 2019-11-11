@@ -2,7 +2,7 @@ package de.mmagic.anstoss.anstosstransfermarket.model;
 
 public class Player {
 
-    public Player(Integer id, String name, Integer age, Double strength, String position, String country, Long price) {
+    public Player(Integer id, String name, Integer age, Double strength, String position, String country, Long price, Integer days) {
         this.id = id;
         this.name = name;
         this.age = age;
@@ -10,6 +10,7 @@ public class Player {
         this.position = position;
         this.country = country;
         this.price = price;
+        this.days = days;
     }
 
     public final Integer id;
@@ -19,5 +20,6 @@ public class Player {
     public final String position;
     public final String country;
     public final Long price;
+    public final Integer days;
 
 }
