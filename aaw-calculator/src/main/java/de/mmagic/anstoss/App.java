@@ -14,20 +14,19 @@ public class App {
         String path3 = "/home/ms/Entwicklung/Git/anstoss-online-tools/aaw-calculator/src/main/resources/AAW_Sommer_2018.html";
         String path4 = "/home/ms/Entwicklung/Git/anstoss-online-tools/aaw-calculator/src/main/resources/AAW_Winter_2019_2.html";
         String path5 = "/home/ms/Entwicklung/Git/anstoss-online-tools/aaw-calculator/src/main/resources/AAW_Sommer_2019_2.html";
+        String path6 = "/home/ms/Entwicklung/Git/anstoss-online-tools/aaw-calculator/src/main/resources/AAW_Winter_2020.html";
 
         Ordering<String> ordering = Ordering.explicit("Schnelligkeit", "Zweikampf", "Kopfball", "Schusskraft", "Schussgenauigkeit", "Technik", "Spielintelligenz");
 
-        new AawParser().readFiles(path2, path3, path4, path5).forEach(player -> {
-            System.out.println("\n" + player.name);
+        new AawParser().readFiles(path2, path3, path4, path5, path6).forEach(player -> {
+            System.out.println("\n" + player.name + " (" + player.data.size() / 7 + " AAWs)");
             ordering.sortedCopy(player.data.keySet()).forEach(key -> {
                 List<Aaw> aaws = player.data.get(key);
                 Range<Integer> range = new RangeCalculator().calculateRange(aaws);
-                String paddedProperty = Strings.padEnd(key + ": ", 19, ' ');
-                String paddedFrom = Strings.padStart(String.valueOf(range.lowerEndpoint()), 2, ' ');
-                String paddedTo = Strings.padStart(String.valueOf(range.upperEndpoint()), 2, ' ');
-                System.out.println(paddedProperty + paddedFrom + "-" + paddedTo + "%");
+                String paddedFrom = Strings.padStart(String.valueOf(range.lowerEndpoint()), 2, '0');
+                String paddedTo = Strings.padStart(String.valueOf(range.upperEndpoint()), 2, '0');
+                System.out.println(paddedFrom + "-" + paddedTo + "%  " + key);
             });
-            System.out.println("Betrachtete AAWs: " + player.data.size() / 7);
         });
     }
 

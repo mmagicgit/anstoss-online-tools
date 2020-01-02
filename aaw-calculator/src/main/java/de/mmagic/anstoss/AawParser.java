@@ -36,7 +36,7 @@ class AawParser {
                 String name = element.getElementsByTag("a").text();
                 String position = element.getElementsByTag("td").get(0).text().trim();
                 String strength = Iterables.getLast(element.getElementsByTag("td")).text().trim();
-                System.out.println("\n" + name);
+                //System.out.println("\n" + name);
                 Player player = findOrCreatePlayer(playerList, name, position);
                 player.strength = new BigDecimal(strength);
 
@@ -50,8 +50,8 @@ class AawParser {
                     Elements td = x.getElementsByTag("td");
                     String gesamt = td.get(7).text();
                     String upOrDown = td.get(8).getElementsByTag("img").attr("alt");
-                    System.out.println(text + " " + gesamt + " " + upOrDown);
-                    int gesamtAsInteger = Integer.valueOf(gesamt.replaceAll("%", "").trim());
+                    //System.out.println(text + " " + gesamt + " " + upOrDown);
+                    int gesamtAsInteger = Integer.parseInt(gesamt.replaceAll("%", "").trim());
                     player.data.put(text, new Aaw(gesamtAsInteger, upOrDown));
                 });
                 addPlayerIfNew(playerList, name, player);

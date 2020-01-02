@@ -24,7 +24,7 @@ class RangeCalculator {
                 from = from + aaw.percent;
                 to = Math.min(99, to + aaw.percent);
             } else {
-                from = 0;
+                from = Math.max(0, from + aaw.percent);
                 to = to + aaw.percent;
             }
         }

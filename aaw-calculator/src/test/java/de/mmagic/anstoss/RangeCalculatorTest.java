@@ -38,6 +38,12 @@ class RangeCalculatorTest {
     }
 
     @Test
+    void subtractTwoWithoutLevelChange2() {
+        List<Aaw> aaws = Lists.newArrayList(new Aaw(61, ""), new Aaw(-5, ""));
+        assertThat(rangeCalculator.calculateRange(aaws), is(Range.closed(56, 94)));
+    }
+
+    @Test
     void subtractAndAddWithoutLevelChange() {
         List<Aaw> aaws = Lists.newArrayList(new Aaw(-17, ""), new Aaw(15, ""));
         assertThat(rangeCalculator.calculateRange(aaws), is(Range.closed(15, 97)));
