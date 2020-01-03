@@ -16,10 +16,12 @@ public class App {
         String path5 = "/home/ms/Entwicklung/Git/anstoss-online-tools/aaw-calculator/src/main/resources/AAW_Sommer_2019_2.html";
         String path6 = "/home/ms/Entwicklung/Git/anstoss-online-tools/aaw-calculator/src/main/resources/AAW_Winter_2020.html";
 
-        Ordering<String> ordering = Ordering.explicit("Schnelligkeit", "Zweikampf", "Kopfball", "Schusskraft", "Schussgenauigkeit", "Technik", "Spielintelligenz");
+        Ordering<String> ordering = Ordering.explicit(
+                "Schnelligkeit", "Zweikampf", "Kopfball", "Schusskraft", "Schussgenauigkeit", "Technik", "Spielintelligenz",
+                "Reflexe", "Paraden", "Lufthoheit", "Herauslaufen", "Ballsicherheit");
 
         new AawParser().readFiles(path2, path3, path4, path5, path6).forEach(player -> {
-            System.out.println("\n" + player.name + " (" + player.data.size() / 7 + " AAWs)");
+            System.out.println("\n" + player.name + " (" + player.data.size() / player.data.keySet().size() + " AAWs)");
             ordering.sortedCopy(player.data.keySet()).forEach(key -> {
                 List<Aaw> aaws = player.data.get(key);
                 Range<Integer> range = new RangeCalculator().calculateRange(aaws);

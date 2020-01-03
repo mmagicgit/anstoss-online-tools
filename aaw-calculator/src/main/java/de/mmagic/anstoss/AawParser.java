@@ -24,9 +24,6 @@ class AawParser {
             Document document = Jsoup.parse(new File(file), StandardCharsets.ISO_8859_1.name());
             Elements tbodyElements = document.getElementsByTag("tbody");
             tbodyElements.remove(0);
-            tbodyElements.remove(0);
-            tbodyElements.remove(0);
-            tbodyElements.remove(0);
             tbodyElements.remove(tbodyElements.size() - 1);
             tbodyElements.remove(tbodyElements.size() - 1);
             tbodyElements.remove(tbodyElements.size() - 1);
