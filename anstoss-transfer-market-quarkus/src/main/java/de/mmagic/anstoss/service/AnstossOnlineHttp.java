@@ -1,43 +1,52 @@
 package de.mmagic.anstoss.service;
 
-import java.net.CookieManager;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
-class AnstossOnlineHttp {
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+class AnstossOnlineHttp implements Closeable {
 
     static final String BASE_URL = "https://www.anstoss-online.de/";
-    private final HttpClient httpClient;
-
-    AnstossOnlineHttp() {
-        httpClient = HttpClient.newBuilder().cookieHandler(new CookieManager()).followRedirects(HttpClient.Redirect.ALWAYS).build();
-    }
+    CloseableHttpClient httpclient = HttpClients.createDefault();
 
     void login(String user, String password) {
         try {
-            HttpRequest loginRequest = request("content/fixed/login.php")
-                    .POST(HttpRequest.BodyPublishers.ofString("login_name=" + user + "&login_pw=" + password))
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .build();
-            httpClient.send(loginRequest, HttpResponse.BodyHandlers.ofString());
+            HttpPost httpPost = new HttpPost(BASE_URL + "content/fixed/login.php");
+            List<NameValuePair> params = Arrays.asList(
+                    new BasicNameValuePair("login_name", user),
+                    new BasicNameValuePair("login_pw", password));
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
+            httpclient.execute(httpPost);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    HttpResponse<String> get(String urlPath) {
+    String get(String urlPath) {
         try {
-            HttpRequest request2 = request(urlPath).GET().build();
-            return httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
+            HttpGet httpGet = new HttpGet(BASE_URL + urlPath);
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            return EntityUtils.toString(response.getEntity());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private HttpRequest.Builder request(String urlPath) throws URISyntaxException {
-        return HttpRequest.newBuilder().uri(new URI(BASE_URL + urlPath));
+    @Override
+    public void close() throws IOException {
+        if (httpclient != null) {
+            httpclient.close();
+        }
     }
 }
