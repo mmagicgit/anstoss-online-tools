@@ -28,10 +28,10 @@ class AnstossOnlineHttp {
         }
     }
 
-    HttpResponse<String> get(String urlPath) {
+    String get(String urlPath) {
         try {
-            HttpRequest request2 = request(urlPath).GET().build();
-            return httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
+            HttpRequest request = request(urlPath).GET().build();
+            return httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

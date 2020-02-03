@@ -21,7 +21,7 @@ public class TransferMarketService {
 
     private static final List<String> positions = Arrays.asList("LIB", "MD", "LV", "RV", "ZM", "RM", "LM", "ST");
 
-    @ConfigProperty(name="ANSTOSS_USER")
+    @ConfigProperty(name = "ANSTOSS_USER")
     String user;
 
     @ConfigProperty(name = "ANSTOSS_PW")
@@ -34,8 +34,8 @@ public class TransferMarketService {
         String positionQueryParameters = positions.stream().map(p -> "idealpos[]=" + p).collect(Collectors.joining(";"));
 
         String searchUrl = String.format("content/getContent.php?dyn=transfers/spielersuche;erg=1;;%s;wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=&alter_min=&alter_max=24&spielerboerse=1", positionQueryParameters);
-        HttpResponse<String> searchResponse = http.get(searchUrl);
-        Document searchDocument = Jsoup.parse(searchResponse.body(), StandardCharsets.ISO_8859_1.name());
+        String searchResponse = http.get(searchUrl);
+        Document searchDocument = Jsoup.parse(searchResponse, StandardCharsets.ISO_8859_1.name());
 
         List<String> pageLinks = searchDocument.select(".navigation > a[href]").stream().map(element -> element.attr("href")).collect(Collectors.toList());
         if (pageLinks.isEmpty()) {
@@ -44,8 +44,8 @@ public class TransferMarketService {
 
         List<Player> players = new ArrayList<>();
         for (String pageLink : pageLinks) {
-            HttpResponse<String> pageResponse = http.get(pageLink);
-            Document pageDocument = Jsoup.parse(pageResponse.body(), StandardCharsets.ISO_8859_1.name());
+            String pageResponse = http.get(pageLink);
+            Document pageDocument = Jsoup.parse(pageResponse, StandardCharsets.ISO_8859_1.name());
 
             Elements rows = pageDocument.select("table.daten_tabelle tr:gt(0)");
             for (Element row : rows) {
@@ -59,8 +59,8 @@ public class TransferMarketService {
                 String playerLink = row.select("[href*=spieler]").attr("href");
                 String playerId = playerLink.replace("?do=spieler;spieler_id=", "").replace("#", "");
                 String aawLink = "content/getContent.php?dyn=transfers/aaw;spieler_id=" + playerId;
-                HttpResponse<String> aawResponse = http.get(aawLink);
-                Document aawDocument = Jsoup.parse(aawResponse.body(), StandardCharsets.ISO_8859_1.name());
+                String aawResponse = http.get(aawLink);
+                Document aawDocument = Jsoup.parse(aawResponse, StandardCharsets.ISO_8859_1.name());
                 Elements aaws = aawDocument.select("tr.hide");
                 aaws.remove(aaws.last());
 
