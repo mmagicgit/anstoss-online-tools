@@ -28,3 +28,32 @@ Or you can use Docker to build the native executable using: `./mvnw package -Pna
 You can then execute your binary: `./target/anstoss-transfer-market-quarkus-1.0.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image-guide .
+
+## Run
+
+Development mode
+
+```
+mvn quarkus:dev
+```
+
+Run from artifact
+
+```
+mvn clean package
+java -jar target/anstoss-transfer-market-quarkus-1.0.0-SNAPSHOT-runner.jar
+```
+
+Run with docker jvm mode
+
+```
+docker build -f src/main/docker/Dockerfile.jvm -t quarkus/anstoss-transfer-market-quarkus-jvm .
+docker run -i --rm -p 8080:8080 quarkus/anstoss-transfer-market-quarkus-jvm
+```
+
+Run with docker native
+
+```
+docker build -f src/main/docker/Dockerfile.multistage -t quarkus/anstoss-transfer-market-quarkus-native .
+docker run -i --rm -p 8080:8080 quarkus/anstoss-transfer-market-quarkus-native
+```
