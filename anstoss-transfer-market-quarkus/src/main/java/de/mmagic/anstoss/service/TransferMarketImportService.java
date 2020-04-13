@@ -1,6 +1,7 @@
 package de.mmagic.anstoss.service;
 
 import de.mmagic.anstoss.model.Player;
+import de.mmagic.anstoss.model.AawCategory;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,16 +9,13 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @ApplicationScoped
-public class TransferMarketService {
+public class TransferMarketImportService {
 
     private static final List<String> positions = Arrays.asList("LIB", "MD", "LV", "RV", "ZM", "RM", "LM", "ST");
 
@@ -64,14 +62,21 @@ public class TransferMarketService {
                 Elements aaws = aawDocument.select("tr.hide");
                 aaws.remove(aaws.last());
 
-                aaws.stream()
-                        .map(tr -> tr.select("td:lt(5)").eachText())
-                        .flatMap(Collection::stream)
-                        .map(percent -> percent.replace("%", "").trim())
-                        .filter(percent -> Integer.parseInt(percent) >= 15)
-                        .findFirst().ifPresent(s -> players.add(new Player(Integer.valueOf(playerId), name, Integer.valueOf(age), Double.valueOf(power.replace(",", ".")), position, country, Long.valueOf(cash), Integer.valueOf(days))));
+                Map<String, List<Integer>> multiMap = new HashMap<>();
+                List.of(AawCategory.values()).forEach(aawCategory -> multiMap.put(aawCategory.name(), new ArrayList<>()));
+
+                aaws.stream().map(tr -> tr.select("td:lt(6)").eachText())
+                        .forEach(values -> addDataToMultiMap(values, multiMap));
+                players.add(new Player(Integer.valueOf(playerId), name, Integer.valueOf(age), Double.valueOf(power.replace(",", ".")), position, country, Long.valueOf(cash), Integer.valueOf(days), multiMap));
             }
         }
         return players;
+    }
+
+    private void addDataToMultiMap(List<String> values, Map<String, List<Integer>> multiMap) {
+        IntStream.range(0, values.size()).forEach(i -> {
+            Integer percentValue = Integer.valueOf(values.get(i).replace("%", "").trim());
+            multiMap.get(AawCategory.values()[i].name()).add(percentValue);
+        });
     }
 }
