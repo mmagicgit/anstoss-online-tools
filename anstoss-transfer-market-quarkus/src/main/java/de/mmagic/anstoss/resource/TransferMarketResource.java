@@ -4,10 +4,7 @@ import de.mmagic.anstoss.model.Player;
 import de.mmagic.anstoss.service.PlayerService;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +33,14 @@ public class TransferMarketResource {
             @QueryParam("maxPercent") Integer maxPercent,
             @QueryParam("maxAgePercent") Integer maxAgePercent) {
         return toRestModel(playerService.search(positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, maxAgePercent));
+    }
+
+    @GET
+    @Path("/import")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PlayerRest> importPlayers() {
+        playerService.importPlayers();
+        return search();
     }
 
     private List<PlayerRest> toRestModel(List<Player> all) {
