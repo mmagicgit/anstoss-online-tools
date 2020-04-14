@@ -1,5 +1,6 @@
 package de.mmagic.anstoss.anstosstransfermarket.service;
 
+import de.mmagic.anstoss.anstosstransfermarket.model.AawCategory;
 import de.mmagic.anstoss.anstosstransfermarket.model.Player;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,16 +9,13 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
-public class TransferMarketService {
+public class TransferMarketImportService {
 
     private static final List<String> positions = Arrays.asList("LIB", "MD", "LV", "RV", "ZM", "RM", "LM", "ST");
 
@@ -32,9 +30,9 @@ public class TransferMarketService {
 
         String positionQueryParameters = positions.stream().map(p -> "idealpos[]=" + p).collect(Collectors.joining(";"));
 
-        String searchUrl = String.format("content/getContent.php?dyn=transfers/spielersuche;erg=1;;%s;wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=&staerke_max=&alter_min=&alter_max=25&spielerboerse=1", positionQueryParameters);
-        HttpResponse<String> searchResponse = http.get(searchUrl);
-        Document searchDocument = Jsoup.parse(searchResponse.body(), StandardCharsets.ISO_8859_1.name());
+        String searchUrl = String.format("content/getContent.php?dyn=transfers/spielersuche;erg=1;;%s;wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=&alter_min=&alter_max=24&spielerboerse=1", positionQueryParameters);
+        String searchResponse = http.get(searchUrl);
+        Document searchDocument = Jsoup.parse(searchResponse, StandardCharsets.ISO_8859_1.name());
 
         List<String> pageLinks = searchDocument.select(".navigation > a[href]").stream().map(element -> element.attr("href")).collect(Collectors.toList());
         if (pageLinks.isEmpty()) {
@@ -43,8 +41,8 @@ public class TransferMarketService {
 
         List<Player> players = new ArrayList<>();
         for (String pageLink : pageLinks) {
-            HttpResponse<String> pageResponse = http.get(pageLink);
-            Document pageDocument = Jsoup.parse(pageResponse.body(), StandardCharsets.ISO_8859_1.name());
+            String pageResponse = http.get(pageLink);
+            Document pageDocument = Jsoup.parse(pageResponse, StandardCharsets.ISO_8859_1.name());
 
             Elements rows = pageDocument.select("table.daten_tabelle tr:gt(0)");
             for (Element row : rows) {
@@ -58,19 +56,26 @@ public class TransferMarketService {
                 String playerLink = row.select("[href*=spieler]").attr("href");
                 String playerId = playerLink.replace("?do=spieler;spieler_id=", "").replace("#", "");
                 String aawLink = "content/getContent.php?dyn=transfers/aaw;spieler_id=" + playerId;
-                HttpResponse<String> aawResponse = http.get(aawLink);
-                Document aawDocument = Jsoup.parse(aawResponse.body(), StandardCharsets.ISO_8859_1.name());
+                String aawResponse = http.get(aawLink);
+                Document aawDocument = Jsoup.parse(aawResponse, StandardCharsets.ISO_8859_1.name());
                 Elements aaws = aawDocument.select("tr.hide");
                 aaws.remove(aaws.last());
 
-                aaws.stream()
-                        .map(tr -> tr.select("td:lt(5)").eachText())
-                        .flatMap(Collection::stream)
-                        .map(percent -> percent.replace("%", "").trim())
-                        .filter(percent -> Integer.parseInt(percent) >= 15)
-                        .findFirst().ifPresent(s -> players.add(new Player(Integer.valueOf(playerId), name, Integer.valueOf(age), Double.valueOf(power.replace(",", ".")), position, country, Long.valueOf(cash), Integer.valueOf(days))));
+                Map<String, List<Integer>> multiMap = new HashMap<>();
+                List.of(AawCategory.values()).forEach(aawCategory -> multiMap.put(aawCategory.name(), new ArrayList<>()));
+
+                aaws.stream().map(tr -> tr.select("td:lt(6)").eachText())
+                        .forEach(values -> addDataToMultiMap(values, multiMap));
+                players.add(new Player(Integer.valueOf(playerId), name, Integer.valueOf(age), Double.valueOf(power.replace(",", ".")), position, country, Long.valueOf(cash), Integer.valueOf(days), multiMap));
             }
         }
         return players;
+    }
+
+    private void addDataToMultiMap(List<String> values, Map<String, List<Integer>> multiMap) {
+        IntStream.range(0, values.size()).forEach(i -> {
+            Integer percentValue = Integer.valueOf(values.get(i).replace("%", "").trim());
+            multiMap.get(AawCategory.values()[i].name()).add(percentValue);
+        });
     }
 }
