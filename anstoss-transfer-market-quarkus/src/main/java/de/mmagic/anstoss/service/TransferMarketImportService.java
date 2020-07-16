@@ -31,7 +31,7 @@ public class TransferMarketImportService {
 
         String positionQueryParameters = positions.stream().map(p -> "idealpos[]=" + p).collect(Collectors.joining(";"));
 
-        String searchUrl = String.format("content/getContent.php?dyn=transfers/spielersuche;erg=1;;%s;wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=&alter_min=&alter_max=24&spielerboerse=1", positionQueryParameters);
+        String searchUrl = String.format("content/getContent.php?dyn=transfers/spielersuche;erg=1;;%s;wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=9&alter_min=&alter_max=26&spielerboerse=1", positionQueryParameters);
         String searchResponse = http.get(searchUrl);
         Document searchDocument = Jsoup.parse(searchResponse, StandardCharsets.ISO_8859_1.name());
 

@@ -16,7 +16,7 @@ export class AppComponent {
   sortedData: Player[] = [];
 
   constructor(private http: HttpClient) {
-    this.http.get<Player[]>(environment.baseUrl + "/search").subscribe(
+    this.http.get<Player[]>(environment.baseUrl + "/players/search?position=RV&position=LIB&position=ZM&position=MD&position=LV&position=LM&position=RM&position=ST&maxPercent=20&ageTo=26").subscribe(
       players => {
         this.players = players;
         this.sortedData = this.players.slice();
