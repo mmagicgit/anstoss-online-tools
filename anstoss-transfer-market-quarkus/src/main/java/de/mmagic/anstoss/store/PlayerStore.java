@@ -37,7 +37,7 @@ public class PlayerStore {
                         "maxPercent", new BasicDBObject("$max", List.of(
                                 new BasicDBObject("$max", "$aaw.Training"),
                                 new BasicDBObject("$max", "$aaw.Einsatz"),
-                                new BasicDBObject("$max", "$aaw.Einsatz"),
+                                new BasicDBObject("$max", "$aaw.Tor"),
                                 new BasicDBObject("$max", "$aaw.Alter"),
                                 new BasicDBObject("$max", "$aaw.Fitness"))),
                         "maxAgePercent", new BasicDBObject("$max", "$aaw.Alter")))
@@ -50,8 +50,12 @@ public class PlayerStore {
         return toList(getCollection().aggregate(pipeline));
     }
 
-    public void addAll(List<Player> players) {
+    public void save(List<Player> players) {
         getCollection().insertMany(players);
+    }
+
+    public void deleteAll() {
+        getCollection().drop();
     }
 
     private MongoCollection<Player> getCollection() {

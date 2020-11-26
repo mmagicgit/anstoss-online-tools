@@ -6,11 +6,12 @@ import { MatButtonModule } from '@angular/material';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { registerLocaleData } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
 
 import { AppComponent } from './app.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { AppComponent } from './app.component';
     MatButtonModule,
     MatTableModule,
     MatSortModule,
-    MatProgressSpinnerModule
+    MatDividerModule,
+    FormsModule
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de-DE'}

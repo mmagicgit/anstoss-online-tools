@@ -5,7 +5,9 @@ import de.mmagic.anstoss.store.PlayerStore;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class PlayerService {
@@ -21,8 +23,15 @@ public class PlayerService {
     }
 
     public List<Player> search(List<String> positions, Integer strengthFrom, Integer strengthTo, Integer ageFrom, Integer ageTo, Integer maxPercent, Integer maxAgePercent) {
+        List<String> positionsToSearch = new ArrayList<>(positions);
+        if (positionsToSearch.contains("LM") || positionsToSearch.contains("RM")) {
+            positionsToSearch.add("LM RM");
+        }
+        if (positionsToSearch.contains("LV") || positionsToSearch.contains("RV")) {
+            positionsToSearch.add("LV RV");
+        }
         return playerStore.search(
-                positions,
+                positionsToSearch,
                 strengthFrom == null ? 0 : strengthFrom,
                 strengthTo == null ? 13 : strengthTo,
                 ageFrom == null? 0 : ageFrom,
@@ -33,7 +42,8 @@ public class PlayerService {
     }
 
     public void importPlayers() {
+        playerStore.deleteAll();
         List<Player> players = transferMarketImportService.search();
-        playerStore.addAll(players);
+        playerStore.save(players);
     }
 }

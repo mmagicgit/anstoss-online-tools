@@ -1,5 +1,64 @@
+<form>
+  <table style="border-spacing: 5px">
+    <tr>
+      <td>Position</td>
+      <td colspan="2">
+        <div *ngFor="let position of positionList" [ngClass]="{'selected': selectedPositions.indexOf(position) >= 0}" (click)="togglePosition(position)">{{position}}</div>
+      </td>
+    </tr>
+    <tr>
+      <td>Stärke</td>
+      <td>
+        <select size="1" [(ngModel)]="this.selectedStrengthFrom" name="selectedStrengthFrom">
+          <option *ngFor="let strength of strengthList">{{strength}}</option>
+        </select></td>
+      <td>
+        <select size="1" [(ngModel)]="this.selectedStrengthTo" name="selectedStrengthTo">
+          <option *ngFor="let strength of strengthList">{{strength}}</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>Alter</td>
+      <td>
+        <select size="1" [(ngModel)]="this.selectedAgeFrom" name="selectedAgeFrom">
+          <option *ngFor="let age of ageList">{{age}}</option>
+        </select></td>
+      <td>
+        <select size="1" [(ngModel)]="this.selectedAgeTo" name="selectedAgeTo">
+          <option *ngFor="let age of ageList">{{age}}</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td style="white-space: nowrap">Max % &ge;</td>
+      <td colspan="2">
+        <select size="1" [(ngModel)]="this.selectedPercent" name="selectedPercent">
+          <option [ngValue]="0"></option>
+          <option *ngFor="let percent of percentList" [ngValue]="percent">{{percent}}</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td style="white-space: nowrap">Max Alter % &ge;</td>
+      <td colspan="2">
+        <select size="1" [(ngModel)]="this.selectedAgePercent" name="selectedAgePercent">
+          <option [ngValue]="0"></option>
+          <option *ngFor="let percent of percentList" [ngValue]="percent">{{percent}}</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <button type="submit" (click)="search()">Suche</button><button type="submit" (click)="reset()">Zurücksetzen</button>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<br>
+<mat-divider *ngIf="players.length != 0 || errorMessage != null"></mat-divider>
 {{errorMessage}}
-<div class="center" *ngIf="players.length == 0 && errorMessage == null"><mat-spinner></mat-spinner></div>
 
 <table *ngIf="players.length != 0" matSort (matSortChange)="sortData($event)">
   <tr>
