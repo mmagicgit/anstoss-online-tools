@@ -6,3 +6,22 @@
   transform: translate(-50%, -50%);
 }
 
+select {
+  width: 100%;
+}
+
+div {
+  display: inline-block;
+  margin: 2px;
+  padding: 1px;
+  cursor: default;
+}
+
+.selected {
+  background-color: #0078d7;
+  color: #FFFFFF;
+}
+
+button {
+  margin-right: 2px;
+}

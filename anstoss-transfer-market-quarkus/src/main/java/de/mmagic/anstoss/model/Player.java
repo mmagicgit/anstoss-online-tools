@@ -13,7 +13,7 @@ public class Player {
     public Player() {
     }
 
-    public Player(Integer id, String name, Integer age, Double strength, String position, String country, Long price, Integer days, Map<String, List<Integer>> aaw) {
+    public Player(Integer id, String name, Integer age, Double strength, String position, String country, Long price, Integer days, Map<String, List<Integer>> aaw, Long importedAt) {
         this.id = id;
         this.name = name;
         this.age = age;
@@ -23,6 +23,7 @@ public class Player {
         this.price = price;
         this.days = days;
         this.aaw = aaw;
+        this.importedAt = importedAt;
     }
 
     public Integer id;
@@ -34,6 +35,7 @@ public class Player {
     public Long price;
     public Integer days;
     public Map<String, List<Integer>> aaw;
+    public Long importedAt;
 
     public Integer getId() {
         return id;
@@ -105,5 +107,13 @@ public class Player {
 
     public void setAaw(Map<String, List<Integer>> aaw) {
         this.aaw = aaw;
+    }
+
+    public Long getImportedAt() {
+        return importedAt;
+    }
+
+    public void setImportedAt(Long importedAt) {
+        this.importedAt = importedAt;
     }
 }
