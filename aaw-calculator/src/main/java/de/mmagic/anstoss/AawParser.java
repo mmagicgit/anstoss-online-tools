@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 
 class AawParser {
 
-    List<Player> readFiles(String... path) throws IOException {
+    List<Player> readFiles(List<String> pathList) throws IOException {
         List<Player> playerList = new ArrayList<>();
 
-        for (String file : path) {
+        for (String file : pathList) {
             Document document = Jsoup.parse(new File(file), StandardCharsets.ISO_8859_1.name());
             Elements tbodyElements = document.getElementsByTag("tbody");
             tbodyElements.remove(0);
@@ -60,7 +60,7 @@ class AawParser {
             playerList.removeAll(playersToRemove);
         }
 
-        Ordering<String> explicit = Ordering.explicit("TW", "MD", "RV", "LIB", "LM", "RM", "ZM", "ST");
+        Ordering<String> explicit = Ordering.explicit("TW", "MD", "RV", "LV", "LV RV", "LIB", "LM", "LM RM", "RM", "ZM", "ST");
         return playerList.stream().sorted((player, player2) -> {
             int compare = explicit.compare(player.position, player2.position);
             if (compare != 0) {
