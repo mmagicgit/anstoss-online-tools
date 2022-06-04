@@ -9,4 +9,15 @@ type Player struct {
 	Price    int
 	Days     int
 	Strength float64
+	Aaw      map[AawCategory][]int
 }
+
+type AawCategory string
+
+const (
+	Training AawCategory = "Training"
+	Fitness  AawCategory = "Fitness"
+	Einsatz  AawCategory = "Einsatz"
+	Alter    AawCategory = "Alter"
+	Tor      AawCategory = "Tor"
+)
