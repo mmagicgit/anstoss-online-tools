@@ -8,3 +8,11 @@ type Player struct {
 	DefensiveWon  int
 	DefensiveLost int
 }
+
+type OneOnOne struct {
+	Minute        int
+	AttackingTeam string
+	Attacker      string
+	Defender      string
+	AttackerWins  bool
+}

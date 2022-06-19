@@ -51,23 +51,26 @@ func (service OneOnOneService) fetchPlayers(currentTeam string, gameIds []string
 				continue
 			}
 			tableData := tableRow.Children()
-			attackingTeam := tableData[0].FindStrict("a").Text()
-			//minute := tableData[1].Text()
-			attacker := tableData[2].Text()
-			defender := tableData[3].Text()
-			attackerWins := tableData[4].Text() == "X"
+			minute, _ := strconv.Atoi(tableData[1].Text())
+			oneOnOne := OneOnOne{
+				Minute:        minute,
+				AttackingTeam: tableData[0].FindStrict("a").Text(),
+				Attacker:      tableData[2].Text(),
+				Defender:      tableData[3].Text(),
+				AttackerWins:  tableData[4].Text() == "X",
+			}
 
 			var defendingTeam string
-			if attackingTeam == currentTeam {
+			if oneOnOne.AttackingTeam == currentTeam {
 				defendingTeam = "opponent"
 			} else {
 				defendingTeam = currentTeam
 			}
 
-			attackingPlayer, players = createOrFindPlayer(players, attacker, attackingTeam)
-			defendingPlayer, players = createOrFindPlayer(players, defender, defendingTeam)
+			attackingPlayer, players = createOrFindPlayer(players, oneOnOne.Attacker, oneOnOne.AttackingTeam)
+			defendingPlayer, players = createOrFindPlayer(players, oneOnOne.Defender, defendingTeam)
 
-			if attackerWins {
+			if oneOnOne.AttackerWins {
 				attackingPlayer.OffensiveWon = attackingPlayer.OffensiveWon + 1
 				defendingPlayer.DefensiveLost++
 			} else {
