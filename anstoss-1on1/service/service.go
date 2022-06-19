@@ -15,14 +15,14 @@ func NewAOneOnOneService(http *AnstossHttpClient) *OneOnOneService {
 	return &OneOnOneService{httpClient: http}
 }
 
-func (service OneOnOneService) FetchData(currentTeam string) {
+func (service *OneOnOneService) FetchData(currentTeam string) {
 	service.httpClient.Login()
 	gameIds := service.fetchGameIds(currentTeam)
 	players := service.fetchPlayers(currentTeam, gameIds)
 	printResult(players, currentTeam)
 }
 
-func (service OneOnOneService) fetchGameIds(currentTeam string) []string {
+func (service *OneOnOneService) fetchGameIds(currentTeam string) []string {
 	var gameIds []string
 	for playDay := 1; playDay < 35; playDay++ {
 		playDayContent := service.httpClient.Get("content/getFixed.php?do=land;land_id=168;wettbewerb_st_id=240;spieltag_nr=" + strconv.Itoa(playDay) + ";start_jahr=2021")
@@ -36,8 +36,9 @@ func (service OneOnOneService) fetchGameIds(currentTeam string) []string {
 	return gameIds
 }
 
-func (service OneOnOneService) fetchPlayers(currentTeam string, gameIds []string) []*Player {
+func (service *OneOnOneService) fetchPlayers(currentTeam string, gameIds []string) []*Player {
 	var players []*Player
+	var oneOnOnes = make(map[int][]OneOnOne)
 	for _, gameId := range gameIds {
 		content := service.httpClient.Get("content/getContent.php?dyn=statistiksystem;spiel_id=" + gameId + ";statistik=spiele_zweikaempfe")
 		html := soup.HTMLParse(content)
@@ -59,6 +60,7 @@ func (service OneOnOneService) fetchPlayers(currentTeam string, gameIds []string
 				Defender:      tableData[3].Text(),
 				AttackerWins:  tableData[4].Text() == "X",
 			}
+			oneOnOnes[minute] = append(oneOnOnes[minute], oneOnOne)
 
 			var defendingTeam string
 			if oneOnOne.AttackingTeam == currentTeam {

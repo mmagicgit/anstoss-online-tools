@@ -26,7 +26,7 @@ func NewAnstossHttpClient(user string, password string) *AnstossHttpClient {
 	return &AnstossHttpClient{http: client, user: user, password: password}
 }
 
-func (client AnstossHttpClient) Login() {
+func (client *AnstossHttpClient) Login() {
 	data := url.Values{}
 	data.Set("login_name", client.user)
 	data.Set("login_pw", client.password)
@@ -38,7 +38,7 @@ func (client AnstossHttpClient) Login() {
 	}
 }
 
-func (client AnstossHttpClient) Get(urlPath string) string {
+func (client *AnstossHttpClient) Get(urlPath string) string {
 	search := baseUrl + urlPath
 	request, _ := http.NewRequest(http.MethodGet, search, nil)
 	response, err := client.http.Do(request)

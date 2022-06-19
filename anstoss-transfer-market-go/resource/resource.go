@@ -18,14 +18,14 @@ func NewPlayerResource(service *service.PlayerService) *PlayerResource {
 	return &PlayerResource{service: service}
 }
 
-func (resource PlayerResource) hello(response http.ResponseWriter, request *http.Request) {
+func (resource *PlayerResource) hello(response http.ResponseWriter, request *http.Request) {
 	_, err := fmt.Fprint(response, "Hello!")
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func (resource PlayerResource) getPlayer(response http.ResponseWriter, request *http.Request) {
+func (resource *PlayerResource) getPlayer(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	var params = mux.Vars(request)
 	id, _ := strconv.Atoi(params["id"])
@@ -35,7 +35,7 @@ func (resource PlayerResource) getPlayer(response http.ResponseWriter, request *
 		log.Fatal(err)
 	}
 }
-func (resource PlayerResource) getAll(response http.ResponseWriter, request *http.Request) {
+func (resource *PlayerResource) getAll(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	players := resource.service.FindAll()
 	err := json.NewEncoder(response).Encode(players)
@@ -44,7 +44,7 @@ func (resource PlayerResource) getAll(response http.ResponseWriter, request *htt
 	}
 }
 
-func (resource PlayerResource) search(response http.ResponseWriter, request *http.Request) {
+func (resource *PlayerResource) search(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	err := request.ParseForm()
 	if err != nil {
@@ -64,7 +64,7 @@ func (resource PlayerResource) search(response http.ResponseWriter, request *htt
 	}
 }
 
-func (resource PlayerResource) importPlayers(response http.ResponseWriter, request *http.Request) {
+func (resource *PlayerResource) importPlayers(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
 	players := resource.service.ImportPlayers()
 	err := json.NewEncoder(response).Encode(players)

@@ -16,7 +16,7 @@ func NewPlayerImportService(httpClient *AnstossHttpClient) *PlayerImportService 
 	return &PlayerImportService{httpClient: httpClient}
 }
 
-func (service PlayerImportService) searchAnstossSite() *[]model.Player {
+func (service *PlayerImportService) searchAnstossSite() *[]model.Player {
 	service.httpClient.Login()
 	pageLinks := service.fetchPageLinks()
 
@@ -36,7 +36,7 @@ func (service PlayerImportService) searchAnstossSite() *[]model.Player {
 	return &players
 }
 
-func (service PlayerImportService) fetchPageLinks() []string {
+func (service *PlayerImportService) fetchPageLinks() []string {
 	path := "content/getContent.php?dyn=transfers/spielersuche;erg=1;;" +
 		positionParameters() +
 		"wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=&alter_min=&alter_max=30&spielerboerse=1"
@@ -52,7 +52,7 @@ func (service PlayerImportService) fetchPageLinks() []string {
 	return pageLinks
 }
 
-func (service PlayerImportService) fetchPlayer(row soup.Root) model.Player {
+func (service *PlayerImportService) fetchPlayer(row soup.Root) model.Player {
 	tableData := row.Children()
 	position := tableData[0].Text()
 	name := tableData[1].FindStrict("a").Text()
@@ -82,7 +82,7 @@ func (service PlayerImportService) fetchPlayer(row soup.Root) model.Player {
 	return player
 }
 
-func (service PlayerImportService) fetchAaw(aawLink string, playerIdString string) map[model.AawCategory][]int {
+func (service *PlayerImportService) fetchAaw(aawLink string, playerIdString string) map[model.AawCategory][]int {
 	aawResponse := service.httpClient.Get(aawLink)
 	aawHtml := soup.HTMLParse(aawResponse)
 

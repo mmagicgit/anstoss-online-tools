@@ -26,7 +26,7 @@ func NewPlayerStore() *PlayerStore {
 	return &PlayerStore{client.Database("anstoss").Collection("player")}
 }
 
-func (store PlayerStore) FindById(id int) *model.Player {
+func (store *PlayerStore) FindById(id int) *model.Player {
 	var player model.Player
 	err := store.playerCollection.FindOne(context.TODO(), bson.D{{"_id", id}}).Decode(&player)
 	if err != nil {
@@ -35,7 +35,7 @@ func (store PlayerStore) FindById(id int) *model.Player {
 	return &player
 }
 
-func (store PlayerStore) FindAll() *[]model.Player {
+func (store *PlayerStore) FindAll() *[]model.Player {
 	cursor, err := store.playerCollection.Find(context.TODO(), bson.D{})
 	if err != nil {
 		log.Fatal(err)
@@ -48,14 +48,14 @@ func (store PlayerStore) FindAll() *[]model.Player {
 	return &players
 }
 
-func (store PlayerStore) DeleteAll() {
+func (store *PlayerStore) DeleteAll() {
 	_, err := store.playerCollection.DeleteMany(context.TODO(), bson.D{})
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func (store PlayerStore) Save(players *[]model.Player) {
+func (store *PlayerStore) Save(players *[]model.Player) {
 	var typeForInsertion []interface{}
 	for _, player := range *players {
 		typeForInsertion = append(typeForInsertion, player)
@@ -66,7 +66,7 @@ func (store PlayerStore) Save(players *[]model.Player) {
 	}
 }
 
-func (store PlayerStore) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, maxAgePercent int) *[]model.Player {
+func (store *PlayerStore) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, maxAgePercent int) *[]model.Player {
 	step1 := bson.M{"$match": bson.M{"$and": []bson.M{{"age": bson.M{"$gte": ageFrom}}, {"age": bson.M{"$lte": ageTo}}, {"strength": bson.M{"$gte": strengthFrom}}, {"strength": bson.M{"$lte": strengthTo}}, {"position": bson.M{"$in": positions}}}}}
 	step2 := bson.M{"$addFields": bson.M{"maxPercent": bson.M{"$max": []bson.M{{"$max": "$aaw.Training"}, {"$max": "$aaw.Einsatz"}, {"$max": "$aaw.Tor"}, {"$max": "$aaw.Alter"}, {"$max": "$aaw.Fitness"}}}, "maxAgePercent": bson.M{"$max": "$aaw.Alter"}}}
 	step3 := bson.M{"$match": bson.M{"$and": []bson.M{{"maxPercent": bson.M{"$gte": maxPercent}}, {"maxAgePercent": bson.M{"$gte": maxAgePercent}}}}}

@@ -20,7 +20,7 @@ func NewServer(resource *PlayerResource) *Server {
 	return &Server{router: router}
 }
 
-func (server Server) ListenAndServe() {
+func (server *Server) ListenAndServe() {
 	err := http.ListenAndServe(":9000", server.router)
 	if err != nil {
 		log.Fatal(err)
