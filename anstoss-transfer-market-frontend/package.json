@@ -22,14 +22,14 @@
     "@angular/platform-browser-dynamic": "^8.2.13",
     "@angular/router": "^8.2.13",
     "core-js": "^3.4.0",
-    "npm-check-updates": "^3.2.1",
+    "npm-check-updates": "^16.6.3",
     "rxjs": "~6.5.3",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.803.18",
-    "@angular/cli": "^8.3.18",
+    "@angular/cli": "^15.1.4",
     "@angular/compiler-cli": "^8.2.13",
     "@angular/language-service": "^8.2.13",
     "@types/jasmine": "~3.4.6",
