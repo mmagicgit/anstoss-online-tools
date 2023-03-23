@@ -45,7 +45,19 @@ func (client *AnstossHttpClient) Get(urlPath string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	reader, _ := charset.NewReader(response.Body, "iso-8859-1")
+	reader, _ := charset.NewReader(response.Body, "utf-8")
+	responseBody, _ := ioutil.ReadAll(reader)
+	return string(responseBody)
+}
+
+func (client *AnstossHttpClient) Post(urlPath string) string {
+	search := baseUrl + urlPath
+	request, _ := http.NewRequest(http.MethodPost, search, nil)
+	response, err := client.http.Do(request)
+	if err != nil {
+		log.Fatal(err)
+	}
+	reader, _ := charset.NewReader(response.Body, "utf-8")
 	responseBody, _ := ioutil.ReadAll(reader)
 	return string(responseBody)
 }

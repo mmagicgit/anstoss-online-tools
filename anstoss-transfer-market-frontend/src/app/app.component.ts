@@ -47,7 +47,7 @@ export class AppComponent {
       percent += "&maxAgePercent=" + this.selectedAgePercent;
     }
 
-    this.http.get<Player[]>(environment.baseUrl + "/search?" + positionString + strength + age + percent).subscribe(
+    this.http.get<Player[]>(environment.baseUrl + "/player/search?" + positionString + strength + age + percent).subscribe(
       players => {
         this.players = players;
         this.sortedData = this.players.slice();

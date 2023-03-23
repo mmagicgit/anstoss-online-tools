@@ -37,11 +37,12 @@ func (service *PlayerImportService) searchAnstossSite() *[]model.Player {
 }
 
 func (service *PlayerImportService) fetchPageLinks() []string {
-	path := "content/getContent.php?dyn=transfers/spielersuche;erg=1;;" +
+	//content/getContent.php?dyn=transfers/spielersuche&erg=1&&idealpos[]=MD&idealpos[]=RV&idealpos[]=LV&idealpos[]=LIB&idealpos[]=LM&idealpos[]=RM&idealpos[]=ZM&idealpos[]=ST&wettbewerb_id=&land_id=&nachname=&vorname=&genauigkeit=1&staerke_min=&staerke_max=&alter_min=&alter_max=&starkerfuss=&eigens_plus=&eigens_char_plus=&spielerboerse=1&max_abloese=
+	path := "content/getContent.php?dyn=transfers/spielersuche&erg=1&&" +
 		positionParameters() +
 		"wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=&alter_min=&alter_max=30&spielerboerse=1"
 
-	result := service.httpClient.Get(path)
+	result := service.httpClient.Post(path)
 	html := soup.HTMLParse(result)
 	pageNavigationDiv := html.FindStrict("div", "class", "navigation").FindNextSibling().FindNextSibling()
 	anchorTags := pageNavigationDiv.FindAllStrict("a")
@@ -54,7 +55,7 @@ func (service *PlayerImportService) fetchPageLinks() []string {
 
 func (service *PlayerImportService) fetchPlayer(row soup.Root) model.Player {
 	tableData := row.Children()
-	position := tableData[0].Text()
+	position := strings.TrimSpace(tableData[0].Text())
 	name := tableData[1].FindStrict("a").Text()
 	strength, _ := strconv.ParseFloat(strings.ReplaceAll(tableData[2].Text(), ",", "."), 64)
 	age, _ := strconv.Atoi(tableData[4].Text())
@@ -63,9 +64,9 @@ func (service *PlayerImportService) fetchPlayer(row soup.Root) model.Player {
 	days, _ := strconv.Atoi(tableData[8].Text())
 
 	playerLink := tableData[1].FindStrict("a").Attrs()["href"]
-	playerIdString := strings.ReplaceAll(strings.ReplaceAll(playerLink, "?do=spieler;spieler_id=", ""), "#", "")
+	playerIdString := strings.ReplaceAll(strings.ReplaceAll(playerLink, "?do=spieler&spieler_id=", ""), "#", "")
 	playerId, _ := strconv.Atoi(playerIdString)
-	aawLink := "content/getContent.php?dyn=transfers/aaw;spieler_id=" + playerIdString
+	aawLink := "content/getContent.php?dyn=transfers/aaw&spieler_id=" + playerIdString
 	aawMultiMap := service.fetchAaw(aawLink, playerIdString)
 
 	player := model.Player{
@@ -83,7 +84,7 @@ func (service *PlayerImportService) fetchPlayer(row soup.Root) model.Player {
 }
 
 func (service *PlayerImportService) fetchAaw(aawLink string, playerIdString string) map[model.AawCategory][]int {
-	aawResponse := service.httpClient.Get(aawLink)
+	aawResponse := service.httpClient.Post(aawLink)
 	aawHtml := soup.HTMLParse(aawResponse)
 
 	var aawMultiMap = make(map[model.AawCategory][]int)
@@ -106,7 +107,7 @@ func (service *PlayerImportService) fetchAaw(aawLink string, playerIdString stri
 func positionParameters() string {
 	var positionString string
 	for _, position := range supportedPositions {
-		positionString += "idealpos[]=" + position + ";"
+		positionString += "idealpos[]=" + position + "&"
 	}
 	return positionString
 }

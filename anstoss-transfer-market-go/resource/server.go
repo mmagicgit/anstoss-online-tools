@@ -2,6 +2,7 @@ package resource
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 )
@@ -21,7 +22,8 @@ func NewServer(resource *PlayerResource) *Server {
 }
 
 func (server *Server) ListenAndServe() {
-	err := http.ListenAndServe(":9000", server.router)
+	handler := cors.AllowAll().Handler(server.router)
+	err := http.ListenAndServe(":9000", handler)
 	if err != nil {
 		log.Fatal(err)
 	}
