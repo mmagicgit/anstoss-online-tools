@@ -23,7 +23,7 @@ func NewServer(resource *PlayerResource) *Server {
 
 func (server *Server) ListenAndServe() {
 	handler := cors.AllowAll().Handler(server.router)
-	err := http.ListenAndServe(":9000", handler)
+	err := http.ListenAndServe(":1111", handler)
 	if err != nil {
 		log.Fatal(err)
 	}

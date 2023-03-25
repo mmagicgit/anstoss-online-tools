@@ -8,8 +8,12 @@ import (
 )
 
 func main() {
-	importService := service.NewPlayerImportService(service.NewAnstossHttpClient(os.Args[1], os.Args[2]))
-	playerService := service.NewPlayerService(store.NewPlayerStore(), importService)
+	user := os.Getenv("ANSTOSS_USER")
+	password := os.Getenv("ANSTOSS_PW")
+	mongoConnect := os.Getenv("MONGO_CONNECT")
+
+	importService := service.NewPlayerImportService(service.NewAnstossHttpClient(user, password))
+	playerService := service.NewPlayerService(store.NewPlayerStore(mongoConnect), importService)
 	playerResource := resource.NewPlayerResource(playerService)
 	server := resource.NewServer(playerResource)
 	server.ListenAndServe()

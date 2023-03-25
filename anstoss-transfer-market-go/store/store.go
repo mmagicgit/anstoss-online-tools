@@ -13,8 +13,8 @@ type PlayerStore struct {
 	playerCollection *mongo.Collection
 }
 
-func NewPlayerStore() *PlayerStore {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+func NewPlayerStore(connectString string) *PlayerStore {
+	clientOptions := options.Client().ApplyURI(connectString)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
