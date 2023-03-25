@@ -51,13 +51,13 @@ func (resource *PlayerResource) search(response http.ResponseWriter, request *ht
 		log.Fatal(err)
 	}
 	positions := request.Form["position"]
+	categories := request.Form["category"]
 	strengthFrom, _ := strconv.Atoi(request.URL.Query().Get("strengthFrom"))
 	strengthTo, _ := strconv.Atoi(request.URL.Query().Get("strengthTo"))
 	ageFrom, _ := strconv.Atoi(request.URL.Query().Get("ageFrom"))
 	ageTo, _ := strconv.Atoi(request.URL.Query().Get("ageTo"))
 	maxPercent, _ := strconv.Atoi(request.URL.Query().Get("maxPercent"))
-	maxAgePercent, _ := strconv.Atoi(request.URL.Query().Get("maxAgePercent"))
-	players := resource.service.Search(positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, maxAgePercent)
+	players := resource.service.Search(positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, categories)
 	err = json.NewEncoder(response).Encode(players)
 	if err != nil {
 		log.Fatal(err)

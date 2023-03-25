@@ -66,16 +66,26 @@ func (store *PlayerStore) Save(players *[]model.Player) {
 	}
 }
 
-func (store *PlayerStore) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, maxAgePercent int) *[]model.Player {
+func (store *PlayerStore) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string) *[]model.Player {
 	step1 := bson.M{"$match": bson.M{"$and": []bson.M{{"age": bson.M{"$gte": ageFrom}}, {"age": bson.M{"$lte": ageTo}}, {"strength": bson.M{"$gte": strengthFrom}}, {"strength": bson.M{"$lte": strengthTo}}, {"position": bson.M{"$in": positions}}}}}
-	step2 := bson.M{"$addFields": bson.M{"maxPercent": bson.M{"$max": []bson.M{{"$max": "$aaw.Training"}, {"$max": "$aaw.Einsatz"}, {"$max": "$aaw.Tor"}, {"$max": "$aaw.Alter"}, {"$max": "$aaw.Fitness"}}}, "maxAgePercent": bson.M{"$max": "$aaw.Alter"}}}
-	step3 := bson.M{"$match": bson.M{"$and": []bson.M{{"maxPercent": bson.M{"$gte": maxPercent}}, {"maxAgePercent": bson.M{"$gte": maxAgePercent}}}}}
+	step2 := bson.M{"$addFields": bson.M{
+		"maxTRAININGPercent": bson.M{"$max": "$aaw.Training"},
+		"maxFITNESSPercent":  bson.M{"$max": "$aaw.Fitness"},
+		"maxEINSATZPercent":  bson.M{"$max": "$aaw.Einsatz"},
+		"maxALTERPercent":    bson.M{"$max": "$aaw.Alter"},
+	}}
+	match := make([]bson.M, 0)
+	for _, cat := range categories {
+		match = append(match, bson.M{"max" + cat + "Percent": bson.M{"$gte": maxPercent}})
+	}
+	step3 := bson.M{"$match": bson.M{"$or": match}}
+
 	pipeline := []bson.M{step1, step2, step3}
 	cursor, err := store.playerCollection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		log.Fatal(err)
 	}
-	var players []model.Player
+	players := make([]model.Player, 0)
 	err = cursor.All(context.TODO(), &players)
 	if err != nil {
 		log.Fatal(err)

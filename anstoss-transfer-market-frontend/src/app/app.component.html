@@ -40,12 +40,9 @@
       </td>
     </tr>
     <tr>
-      <td style="white-space: nowrap">Max Alter % &ge;</td>
+      <td>AAW</td>
       <td colspan="2">
-        <select size="1" [(ngModel)]="this.selectedAgePercent" name="selectedAgePercent">
-          <option [ngValue]="0"></option>
-          <option *ngFor="let percent of percentList" [ngValue]="percent">{{percent}}</option>
-        </select>
+        <div *ngFor="let category of aawCategoryList" [ngClass]="{'selected': selectedAawCategories.indexOf(category) >= 0}" (click)="toggleCategory(category)">{{category}}</div>
       </td>
     </tr>
     <tr>

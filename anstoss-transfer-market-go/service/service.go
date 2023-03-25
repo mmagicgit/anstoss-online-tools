@@ -34,15 +34,18 @@ func (service *PlayerService) ImportPlayers() *[]model.Player {
 	return players
 }
 
-func (service *PlayerService) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, maxAgePercent int) *[]model.Player {
-	if positions == nil || len(positions) == 0 {
-		positions = supportedPositions
+func (service *PlayerService) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string) *[]model.Player {
+	if positions == nil {
+		positions = []string{}
 	}
 	if slices.Contains(positions, "LM") || slices.Contains(positions, "RM") {
 		positions = append(positions, "LM RM")
 	}
 	if slices.Contains(positions, "LV") || slices.Contains(positions, "RV") {
 		positions = append(positions, "LV RV")
+	}
+	if categories == nil {
+		categories = []string{}
 	}
 	return service.store.Search(
 		positions,
@@ -51,7 +54,7 @@ func (service *PlayerService) Search(positions []string, strengthFrom int, stren
 		ageFrom,
 		If(ageTo == 0, 50, ageTo),
 		If(maxPercent == 0, -50, maxPercent),
-		If(maxAgePercent == 0, -50, maxAgePercent),
+		categories,
 	)
 }
 

@@ -14,17 +14,19 @@ export class AppComponent {
   positionList: string[] = ["MD", "RV", "LV", "LIB", "LM", "RM", "ZM", "ST"];
   selectedPositions: string[] = this.positionList;
 
+  aawCategoryList: string[] = ["TRAINING", "FITNESS", "EINSATZ", "ALTER"];
+  selectedAawCategories: string[] = this.aawCategoryList;
+
   strengthList: number[] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
   selectedStrengthFrom: number = 0;
   selectedStrengthTo: number = 0;
 
-  ageList: number[] = [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
+  ageList: number[] = [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
   selectedAgeFrom: number = 0;
   selectedAgeTo: number = 0;
 
-  percentList: number[] = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
+  percentList: number[] = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
   selectedPercent: number = 0;
-  selectedAgePercent: number = 0;
 
   errorMessage: string = null;
   players: Player[] = [];
@@ -37,17 +39,14 @@ export class AppComponent {
 
   search() {
     const positionString = this.selectedPositions.map(position => "position=" + position).join("&");
+    const categoryString = this.selectedAawCategories.map(category => "&category=" + category).join("&");
     const strength = "&strengthFrom=" + this.selectedStrengthFrom + "&strengthTo=" + this.selectedStrengthTo;
     const age = "&ageFrom=" + this.selectedAgeFrom + "&ageTo=" + this.selectedAgeTo;
     let percent = "";
     if (this.selectedPercent > 0) {
       percent += "&maxPercent=" + this.selectedPercent;
     }
-    if (this.selectedAgePercent > 0) {
-      percent += "&maxAgePercent=" + this.selectedAgePercent;
-    }
-
-    this.http.get<Player[]>(environment.baseUrl + "/player/search?" + positionString + strength + age + percent).subscribe(
+    this.http.get<Player[]>(environment.baseUrl + "/player/search?" + positionString + categoryString + strength + age + percent).subscribe(
       players => {
         this.players = players;
         this.sortedData = this.players.slice();
@@ -58,12 +57,12 @@ export class AppComponent {
 
   reset() {
     this.selectedStrengthFrom = 4;
-    this.selectedStrengthTo = 8;
+    this.selectedStrengthTo = 10;
     this.selectedAgeFrom = this.ageList[0];
-    this.selectedAgeTo = 23;
+    this.selectedAgeTo = 26;
     this.selectedPercent = 15;
-    this.selectedAgePercent = 0;
     this.selectedPositions = this.positionList;
+    this.selectedAawCategories = this.aawCategoryList;
     this.search();
   }
 
@@ -72,6 +71,14 @@ export class AppComponent {
       this.selectedPositions.push(position);
     } else {
       this.selectedPositions = this.selectedPositions.filter(pos => pos !== position);
+    }
+  }
+
+  toggleCategory(category: string) {
+    if (this.selectedAawCategories.indexOf(category) === -1) {
+      this.selectedAawCategories.push(category);
+    } else {
+      this.selectedAawCategories = this.selectedAawCategories.filter(cat => cat !== category);
     }
   }
 
