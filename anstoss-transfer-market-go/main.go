@@ -14,6 +14,7 @@ func main() {
 
 	importService := service.NewPlayerImportService(service.NewAnstossHttpClient(user, password))
 	playerService := service.NewPlayerService(store.NewPlayerStore(mongoConnect), importService)
+	service.StartScheduler(playerService)
 	playerResource := resource.NewPlayerResource(playerService)
 	server := resource.NewServer(playerResource)
 	server.ListenAndServe()
