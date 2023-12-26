@@ -24,12 +24,12 @@ func (service *OneOnOneService) FetchData(currentTeam string) {
 
 func (service *OneOnOneService) fetchGameIds(currentTeam string) []string {
 	var gameIds []string
-	for playDay := 1; playDay < 35; playDay++ {
-		playDayContent := service.httpClient.Get("content/getFixed.php?do=land;land_id=168;wettbewerb_st_id=240;spieltag_nr=" + strconv.Itoa(playDay) + ";start_jahr=2021")
+	for playDay := 1; playDay < 18; playDay++ {
+		playDayContent := service.httpClient.Get("?do=land&land_id=168&wettbewerb_st_id=240&spieltag_nr=" + strconv.Itoa(playDay) + "&start_jahr=2023")
 		playDayHtml := soup.HTMLParse(playDayContent)
 		find := playDayHtml.FindStrict("table", "class", "daten_tabelle").FindStrict("a", "title", currentTeam)
 		gameId := find.Pointer.Parent.Parent.LastChild.FirstChild.Attr[0].Val
-		gameId = strings.ReplaceAll(gameId, "../content/getContent.php?dyn=spielbericht;spiel_id=", "")
+		gameId = strings.ReplaceAll(gameId, "../content/getContent.php?dyn=spielbericht&spiel_id=", "")
 		gameId = strings.ReplaceAll(gameId, "#", "")
 		gameIds = append(gameIds, gameId)
 	}
@@ -37,15 +37,11 @@ func (service *OneOnOneService) fetchGameIds(currentTeam string) []string {
 }
 
 func (service *OneOnOneService) fetchPlayers(currentTeam string, gameIds []string) []*Player {
-	var players []*Player
 	var oneOnOnes = make(map[int][]OneOnOne)
 	for _, gameId := range gameIds {
-		content := service.httpClient.Get("content/getContent.php?dyn=statistiksystem;spiel_id=" + gameId + ";statistik=spiele_zweikaempfe")
+		content := service.httpClient.Get("content/getContent.php?dyn=statistiksystem&spiel_id=" + gameId + "&statistik=spiele_zweikaempfe")
 		html := soup.HTMLParse(content)
 		tableRows := html.FindStrict("table", "class", "daten_tabelle").FindAllStrict("tr")
-
-		var attackingPlayer *Player
-		var defendingPlayer *Player
 
 		for index, tableRow := range tableRows {
 			if index == 0 {
@@ -61,7 +57,12 @@ func (service *OneOnOneService) fetchPlayers(currentTeam string, gameIds []strin
 				AttackerWins:  tableData[4].Text() == "X",
 			}
 			oneOnOnes[minute] = append(oneOnOnes[minute], oneOnOne)
+		}
+	}
 
+	var players []*Player
+	for _, oneOnOneSlice := range oneOnOnes {
+		for _, oneOnOne := range oneOnOneSlice {
 			var defendingTeam string
 			if oneOnOne.AttackingTeam == currentTeam {
 				defendingTeam = "opponent"
@@ -69,6 +70,8 @@ func (service *OneOnOneService) fetchPlayers(currentTeam string, gameIds []strin
 				defendingTeam = currentTeam
 			}
 
+			var attackingPlayer *Player
+			var defendingPlayer *Player
 			attackingPlayer, players = createOrFindPlayer(players, oneOnOne.Attacker, oneOnOne.AttackingTeam)
 			defendingPlayer, players = createOrFindPlayer(players, oneOnOne.Defender, defendingTeam)
 
