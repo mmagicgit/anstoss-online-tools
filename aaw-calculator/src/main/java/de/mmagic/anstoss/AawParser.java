@@ -21,7 +21,12 @@ class AawParser {
         List<Player> playerList = new ArrayList<>();
 
         for (String file : pathList) {
-            Document document = Jsoup.parse(new File(file), StandardCharsets.ISO_8859_1.name());
+            Document documentForCharset = Jsoup.parse(new File(file), StandardCharsets.UTF_8.name());
+            String charset = documentForCharset.getElementsByTag("meta")
+                    .get(0).attr("content")
+                    .replaceAll("text/html;", "").replaceAll("charset=", "").trim();
+
+            Document document = Jsoup.parse(new File(file), charset);
             Elements tbodyElements = document.getElementsByTag("tbody");
             tbodyElements.remove(0);
             tbodyElements.remove(tbodyElements.size() - 1);
