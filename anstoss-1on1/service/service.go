@@ -39,24 +39,30 @@ func (service *OneOnOneService) fetchGameIds(currentTeam string) []string {
 func (service *OneOnOneService) fetchPlayers(currentTeam string, gameIds []string) []*Player {
 	var oneOnOnes = make(map[int][]OneOnOne)
 	for _, gameId := range gameIds {
-		content := service.httpClient.Get("content/getContent.php?dyn=statistiksystem&spiel_id=" + gameId + "&statistik=spiele_zweikaempfe")
-		html := soup.HTMLParse(content)
-		tableRows := html.FindStrict("table", "class", "daten_tabelle").FindAllStrict("tr")
+		for i := 1; ; i++ {
+			content := service.httpClient.Get("content/getContent.php?dyn=statistiksystem&spiel_id=" + gameId + "&statistik=spiele_zweikaempfe&page=" + strconv.Itoa(i))
+			html := soup.HTMLParse(content)
+			tableRows := html.FindStrict("table", "class", "daten_tabelle").FindAllStrict("tr")
 
-		for index, tableRow := range tableRows {
-			if index == 0 {
-				continue
+			for index, tableRow := range tableRows {
+				if index == 0 {
+					continue
+				}
+				tableData := tableRow.Children()
+				minute, _ := strconv.Atoi(tableData[1].Text())
+				oneOnOne := OneOnOne{
+					Minute:        minute,
+					AttackingTeam: tableData[0].FindStrict("a").Text(),
+					Attacker:      tableData[2].Text(),
+					Defender:      tableData[3].Text(),
+					AttackerWins:  tableData[4].Text() == "X",
+				}
+				oneOnOnes[minute] = append(oneOnOnes[minute], oneOnOne)
 			}
-			tableData := tableRow.Children()
-			minute, _ := strconv.Atoi(tableData[1].Text())
-			oneOnOne := OneOnOne{
-				Minute:        minute,
-				AttackingTeam: tableData[0].FindStrict("a").Text(),
-				Attacker:      tableData[2].Text(),
-				Defender:      tableData[3].Text(),
-				AttackerWins:  tableData[4].Text() == "X",
+			fullSite := html.HTML()
+			if !strings.Contains(fullSite, "page="+strconv.Itoa(i+1)) {
+				break
 			}
-			oneOnOnes[minute] = append(oneOnOnes[minute], oneOnOne)
 		}
 	}
 
@@ -109,7 +115,7 @@ func printResult(players []*Player, currentTeam string) {
 			if player.DefensiveWon+player.DefensiveLost > 0 {
 				percentDefensive = float64(player.DefensiveWon*100) / float64(player.DefensiveWon+player.DefensiveLost)
 			}
-			fmt.Printf("%s: Offensive %d/%d (%.0f%%), Defensive %d/%d (%.0f%%)\n", player.Name, player.OffensiveWon, player.OffensiveWon+player.OffensiveLost, percentOffensive, player.DefensiveWon, player.DefensiveWon+player.DefensiveLost, percentDefensive)
+			fmt.Printf("%s: Offensiv %d/%d (%.0f%%), Defensiv %d/%d (%.0f%%)\n", player.Name, player.OffensiveWon, player.OffensiveWon+player.OffensiveLost, percentOffensive, player.DefensiveWon, player.DefensiveWon+player.DefensiveLost, percentDefensive)
 		}
 	}
 }

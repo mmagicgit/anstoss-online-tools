@@ -1,8 +1,7 @@
 package service
 
 import (
-	"golang.org/x/net/html/charset"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -45,7 +44,6 @@ func (client *AnstossHttpClient) Get(urlPath string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	reader, _ := charset.NewReader(response.Body, "iso-8859-1")
-	responseBody, _ := ioutil.ReadAll(reader)
+	responseBody, _ := io.ReadAll(response.Body)
 	return string(responseBody)
 }
