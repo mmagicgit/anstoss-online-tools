@@ -3,7 +3,7 @@ package service
 import (
 	"anstoss-transfer-market-go/model"
 	"anstoss-transfer-market-go/store"
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 var (
