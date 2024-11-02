@@ -1,9 +1,10 @@
 package resource
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"log"
+	"log/slog"
 	"net/http"
 )
 
@@ -21,10 +22,12 @@ func NewServer(resource *PlayerResource) *Server {
 	return &Server{router: router}
 }
 
-func (server *Server) ListenAndServe() {
+func (server *Server) ListenAndServe() error {
 	handler := cors.AllowAll().Handler(server.router)
-	err := http.ListenAndServe(":1111", handler)
-	if err != nil {
-		log.Fatal(err)
+	port := 1111
+	slog.Info(fmt.Sprintf("Starting server an port %d", port))
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), handler); err != nil {
+		return err
 	}
+	return nil
 }

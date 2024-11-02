@@ -2,7 +2,6 @@ package service
 
 import (
 	"io"
-	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -17,44 +16,63 @@ type AnstossHttpClient struct {
 	http     *http.Client
 }
 
-func NewAnstossHttpClient(user string, password string) *AnstossHttpClient {
-	jar, _ := cookiejar.New(nil)
+func NewAnstossHttpClient(user string, password string) (*AnstossHttpClient, error) {
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil, err
+	}
 	client := &http.Client{
 		Jar: jar,
 	}
-	return &AnstossHttpClient{http: client, user: user, password: password}
+	return &AnstossHttpClient{http: client, user: user, password: password}, nil
 }
 
-func (client *AnstossHttpClient) Login() {
+func (client *AnstossHttpClient) Login() error {
 	data := url.Values{}
 	data.Set("login_name", client.user)
 	data.Set("login_pw", client.password)
-	request, _ := http.NewRequest(http.MethodPost, baseUrl+"content/fixed/login.php", strings.NewReader(data.Encode()))
+	request, err := http.NewRequest(http.MethodPost, baseUrl+"content/fixed/login.php", strings.NewReader(data.Encode()))
+	if err != nil {
+		return err
+	}
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	_, err := client.http.Do(request)
+	_, err = client.http.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
 
-func (client *AnstossHttpClient) Get(urlPath string) string {
+func (client *AnstossHttpClient) Get(urlPath string) (string, error) {
 	search := baseUrl + urlPath
-	request, _ := http.NewRequest(http.MethodGet, search, nil)
+	request, err := http.NewRequest(http.MethodGet, search, nil)
+	if err != nil {
+		return "", err
+	}
 	response, err := client.http.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
-	responseBody, _ := io.ReadAll(response.Body)
-	return string(responseBody)
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(responseBody), nil
 }
 
-func (client *AnstossHttpClient) Post(urlPath string) string {
+func (client *AnstossHttpClient) Post(urlPath string) (string, error) {
 	search := baseUrl + urlPath
-	request, _ := http.NewRequest(http.MethodPost, search, nil)
+	request, err := http.NewRequest(http.MethodPost, search, nil)
+	if err != nil {
+		return "", err
+	}
 	response, err := client.http.Do(request)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
-	responseBody, _ := io.ReadAll(response.Body)
-	return string(responseBody)
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(responseBody), nil
 }

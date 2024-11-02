@@ -4,18 +4,40 @@ import (
 	"anstoss-transfer-market-go/resource"
 	"anstoss-transfer-market-go/service"
 	"anstoss-transfer-market-go/store"
+	"log/slog"
 	"os"
 )
 
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
 	user := os.Getenv("ANSTOSS_USER")
 	password := os.Getenv("ANSTOSS_PW")
 	mongoConnect := os.Getenv("MONGO_CONNECT")
 
-	importService := service.NewPlayerImportService(service.NewAnstossHttpClient(user, password))
-	playerService := service.NewPlayerService(store.NewPlayerStore(mongoConnect), importService)
-	service.StartScheduler(playerService)
+	client, err := service.NewAnstossHttpClient(user, password)
+	if err != nil {
+		slog.Error("Error creating http client", slog.String("error", err.Error()))
+		return
+	}
+	importService := service.NewPlayerImportService(client)
+	playerStore, err := store.NewPlayerStore(mongoConnect)
+	if err != nil {
+		slog.Error("Error connecting to database", slog.String("error", err.Error()))
+		return
+	}
+	playerService := service.NewPlayerService(playerStore, importService)
+	err = service.StartScheduler(playerService)
+	if err != nil {
+		slog.Error("Error starting scheduler", slog.String("error", err.Error()))
+		return
+	}
 	playerResource := resource.NewPlayerResource(playerService)
 	server := resource.NewServer(playerResource)
-	server.ListenAndServe()
+	err = server.ListenAndServe()
+	if err != nil {
+		slog.Error("Error starting server", slog.String("error", err.Error()))
+		return
+	}
 }

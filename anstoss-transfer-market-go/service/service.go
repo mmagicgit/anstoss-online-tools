@@ -19,22 +19,30 @@ func NewPlayerService(store *store.PlayerStore, importService *PlayerImportServi
 	return &PlayerService{store: store, importService: importService}
 }
 
-func (service *PlayerService) FindPlayer(id int) *model.Player {
+func (service *PlayerService) FindPlayer(id int) (*model.Player, error) {
 	return service.store.FindById(id)
 }
 
-func (service *PlayerService) FindAll() *[]model.Player {
+func (service *PlayerService) FindAll() (*[]model.Player, error) {
 	return service.store.FindAll()
 }
 
-func (service *PlayerService) ImportPlayers() *[]model.Player {
-	players := service.importService.searchAnstossSite()
-	service.store.DeleteAll()
-	service.store.Save(players)
-	return players
+func (service *PlayerService) ImportPlayers() (*[]model.Player, error) {
+	players, err := service.importService.searchAnstossSite()
+	if err != nil {
+		return nil, err
+	}
+	if err = service.store.DeleteAll(); err != nil {
+		return nil, err
+	}
+	err = service.store.Save(players)
+	if err = service.store.Save(players); err != nil {
+		return nil, err
+	}
+	return players, nil
 }
 
-func (service *PlayerService) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string) *[]model.Player {
+func (service *PlayerService) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string) (*[]model.Player, error) {
 	if positions == nil {
 		positions = []string{}
 	}

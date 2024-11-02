@@ -2,16 +2,21 @@ package service
 
 import (
 	"github.com/robfig/cron/v3"
-	"log"
+	"log/slog"
 )
 
-func StartScheduler(playerService *PlayerService) {
+func StartScheduler(playerService *PlayerService) error {
 	c := cron.New()
 	_, err := c.AddFunc("0 3 * * *", func() {
-		playerService.ImportPlayers()
+		slog.Info("Starting player import")
+		_, err := playerService.ImportPlayers()
+		if err != nil {
+			slog.Error("Error importing players", slog.String("error", err.Error()))
+		}
 	})
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	c.Start()
+	return nil
 }
