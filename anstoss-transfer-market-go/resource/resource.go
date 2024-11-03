@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 )
@@ -18,6 +19,7 @@ func NewPlayerResource(service *service.PlayerService) *PlayerResource {
 }
 
 func (resource *PlayerResource) hello(response http.ResponseWriter, request *http.Request) {
+	slog.Debug(fmt.Sprintf("%s %s", request.Method, request.URL))
 	_, err := fmt.Fprint(response, "Hello!")
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
@@ -26,6 +28,7 @@ func (resource *PlayerResource) hello(response http.ResponseWriter, request *htt
 }
 
 func (resource *PlayerResource) getPlayer(response http.ResponseWriter, request *http.Request) {
+	slog.Debug(fmt.Sprintf("%s %s", request.Method, request.URL))
 	response.Header().Set("Content-Type", "application/json")
 	var idAsString = request.PathValue("id")
 	id, err := strconv.Atoi(idAsString)
@@ -46,6 +49,7 @@ func (resource *PlayerResource) getPlayer(response http.ResponseWriter, request 
 
 }
 func (resource *PlayerResource) getAll(response http.ResponseWriter, request *http.Request) {
+	slog.Debug(fmt.Sprintf("%s %s", request.Method, request.URL))
 	response.Header().Set("Content-Type", "application/json")
 	players, err := resource.service.FindAll()
 	if err != nil {
@@ -60,6 +64,7 @@ func (resource *PlayerResource) getAll(response http.ResponseWriter, request *ht
 }
 
 func (resource *PlayerResource) search(response http.ResponseWriter, request *http.Request) {
+	slog.Debug(fmt.Sprintf("%s %s", request.Method, request.URL))
 	response.Header().Set("Content-Type", "application/json")
 	errParse := request.ParseForm()
 	positions := request.Form["position"]
@@ -86,6 +91,7 @@ func (resource *PlayerResource) search(response http.ResponseWriter, request *ht
 }
 
 func (resource *PlayerResource) importPlayers(response http.ResponseWriter, request *http.Request) {
+	slog.Debug(fmt.Sprintf("%s %s", request.Method, request.URL))
 	response.Header().Set("Content-Type", "application/json")
 	players, err := resource.service.ImportPlayers()
 	if err != nil {

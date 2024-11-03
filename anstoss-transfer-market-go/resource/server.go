@@ -25,7 +25,7 @@ func NewServer(resource *PlayerResource) *Server {
 	//router.HandleFunc("/player", resource.getAll).Methods("GET")
 	//router.HandleFunc("/player/{id}", resource.getPlayer).Methods("GET")
 	//router.HandleFunc("/player/search", resource.search).Methods("GET")
-	//router.HandleFunc("/player/import", resource.importPlayers).Methods("POST")
+	//router.HandleFunc("/player/import", resource.importPlayers).Methods("GET")
 
 	//Go 1.22 router
 	router := http.NewServeMux()
@@ -33,7 +33,7 @@ func NewServer(resource *PlayerResource) *Server {
 	router.HandleFunc("GET /player", resource.getAll)
 	router.HandleFunc("GET /player/{id}", resource.getPlayer)
 	router.HandleFunc("GET /player/search", resource.search)
-	router.HandleFunc("POST /player/import", resource.importPlayers)
+	router.HandleFunc("GET /player/import", resource.importPlayers)
 	return &Server{router: router}
 }
 

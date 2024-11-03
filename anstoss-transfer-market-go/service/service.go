@@ -35,7 +35,6 @@ func (service *PlayerService) ImportPlayers() (*[]model.Player, error) {
 	if err = service.store.DeleteAll(); err != nil {
 		return nil, err
 	}
-	err = service.store.Save(players)
 	if err = service.store.Save(players); err != nil {
 		return nil, err
 	}

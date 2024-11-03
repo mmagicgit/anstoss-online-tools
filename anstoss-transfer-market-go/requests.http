@@ -1,0 +1,15 @@
+### Hello
+GET http://localhost:1111/
+
+### Fetch player
+GET http://localhost:1111/player/122027
+
+### Fetch all players
+GET http://localhost:1111/player
+
+### Search players
+GET http://localhost:1111/player/search?position=MD&position=RV&position=LV&position=LIB&position=LM&position=RM&position=ZM&position=ST&category=TRAINING&category=FITNESS&category=EINSATZ&category=ALTER&strengthFrom=4&strengthTo=10&ageFrom=18&ageTo=26&maxPercent=15
+
+### Import players
+GET http://localhost:1111/player/import
+
