@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
@@ -28,8 +27,8 @@ func (resource *PlayerResource) hello(response http.ResponseWriter, request *htt
 
 func (resource *PlayerResource) getPlayer(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	var params = mux.Vars(request)
-	id, err := strconv.Atoi(params["id"])
+	var idAsString = request.PathValue("id")
+	id, err := strconv.Atoi(idAsString)
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusBadRequest)
 		return

@@ -4,7 +4,6 @@ go 1.23
 
 require (
 	github.com/anaskhan96/soup v1.2.5
-	github.com/gorilla/mux v1.8.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/cors v1.11.1
 	go.mongodb.org/mongo-driver v1.17.1
@@ -12,7 +11,7 @@ require (
 
 require (
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/klauspost/compress v1.17.10 // indirect
+	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect

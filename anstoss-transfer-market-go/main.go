@@ -4,13 +4,20 @@ import (
 	"anstoss-transfer-market-go/resource"
 	"anstoss-transfer-market-go/service"
 	"anstoss-transfer-market-go/store"
+	"fmt"
 	"log/slog"
 	"os"
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logLevel := slog.LevelDebug
+	slog.SetLogLoggerLevel(logLevel)
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
+	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
 	slog.SetDefault(logger)
+
+	//log.Println("Starting without Log level")
+	slog.Debug(fmt.Sprintf("Starting with Log level %s", logLevel.String()))
 
 	user := os.Getenv("ANSTOSS_USER")
 	password := os.Getenv("ANSTOSS_PW")
