@@ -10,14 +10,7 @@ import (
 )
 
 func main() {
-	logLevel := slog.LevelDebug
-	slog.SetLogLoggerLevel(logLevel)
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
-	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
-	slog.SetDefault(logger)
-
-	//log.Println("Starting without Log level")
-	slog.Debug(fmt.Sprintf("Starting with Log level %s", logLevel.String()))
+	configureLogging()
 
 	user := os.Getenv("ANSTOSS_USER")
 	password := os.Getenv("ANSTOSS_PW")
@@ -47,4 +40,15 @@ func main() {
 		slog.Error("Error starting server", slog.String("error", err.Error()))
 		return
 	}
+}
+
+func configureLogging() {
+	logLevel := slog.LevelDebug
+	slog.SetLogLoggerLevel(logLevel)
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
+	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel}))
+	slog.SetDefault(logger)
+
+	//log.Println("Starting without Log level")
+	slog.Debug(fmt.Sprintf("Starting with Log level %s", logLevel.String()))
 }
