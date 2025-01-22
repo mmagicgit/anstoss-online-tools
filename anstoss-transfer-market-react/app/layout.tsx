@@ -1,5 +1,6 @@
 import "./globals.css";
 import React from "react";
+import Nav from "@/components/Nav";
 
 export default function RootLayout({
   children,
@@ -9,6 +10,7 @@ export default function RootLayout({
   return (
     <html>
       <body>
+        <Nav></Nav>
         {children}
       </body>
     </html>
