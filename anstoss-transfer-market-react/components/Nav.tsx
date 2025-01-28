@@ -13,7 +13,7 @@ export default function Nav() {
     }, [theme]);
 
     return (
-         <div className="navbar bg-base-100">
+         <div className="navbar bg-base-100 sticky top-0 z-50">
             <div className="flex-1">
                 <Link className="btn btn-ghost text-xl" href="/">
                     <div className="avatar">
