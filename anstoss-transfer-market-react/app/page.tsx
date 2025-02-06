@@ -2,7 +2,8 @@
 import {useEffect, useState} from "react";
 import {Player} from "@/model/Player";
 import {Sort, SortMode} from "@/model/Sort";
-import TableHeader from "@/components/TableHeader";
+import SearchForm from "@/components/SearchForm";
+import PlayerTable from "@/components/PlayerTable";
 
 export default function Home() {
     const [players, setPlayers] = useState<Player[]>([])
@@ -39,35 +40,11 @@ export default function Home() {
     }
 
     return (
-        <div className="overflow-x-auto relative max-w-2xl">
-            <table className="table table-xs">
-                <thead>
-                <tr>
-                    <TableHeader sort={sort} name="Position" columnKey="position" onSort={setSortMode}/>
-                    <TableHeader sort={sort} name="Name" columnKey="name" onSort={setSortMode}/>
-                    <TableHeader sort={sort} name="Stärke" columnKey="strength" onSort={setSortMode}/>
-                    <TableHeader sort={sort} name="Alter" columnKey="age" onSort={setSortMode}/>
-                    <TableHeader sort={sort} name="Land" columnKey="country" onSort={setSortMode}/>
-                    <TableHeader sort={sort} name="Preis" columnKey="price" onSort={setSortMode}/>
-                    <TableHeader sort={sort} name="Tage" columnKey="days" onSort={setSortMode}/>
-                </tr>
-                </thead>
-                <tbody>
-                {getPlayers().map(player => (
-                    <tr key={player.id} className="hover">
-                        <td>{player.position}</td>
-                        <td><a className="link link-primary"
-                               href={"https://www.anstoss-online.de/?do=spieler&spieler_id=" + player.id + "#"}>{player.name}</a>
-                        </td>
-                        <td className="text-right">{player.strength.toLocaleString("en-EN", {minimumFractionDigits: 1, maximumFractionDigits: 1})}</td>
-                        <td className="text-right">{player.age}</td>
-                        <td>{player.country}</td>
-                        <td className="text-right">{player.price.toLocaleString()}</td>
-                        <td className="text-right">{player.days}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+        <div className="flex flex-col items-center">
+            <h1 className="text-xl font-bold">Spielersuche</h1>
+            <SearchForm/>
+            <div className="divider"></div>
+            <PlayerTable players={getPlayers()} sort={sort} onSort={setSortMode}/>
         </div>
     );
 }
