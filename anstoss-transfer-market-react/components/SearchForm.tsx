@@ -15,21 +15,23 @@ export default function SearchForm() {
     const [selection, setSelection] = useState<FormSelection>(initialState)
 
     function setPosition(position: string) {
-        if (selection.position.indexOf(position) === -1) {
-            selection.position.push(position);
+        let positionToApply = [...selection.position]
+        if (positionToApply.indexOf(position) === -1) {
+            positionToApply.push(position);
         } else {
-            selection.position = selection.position.filter(pos => pos !== position);
+            positionToApply = positionToApply.filter(pos => pos !== position);
         }
-        setSelection({...selection, position: selection.position})
+        setSelection({...selection, position: positionToApply})
     }
 
     function setCategory(category: string) {
-        if (selection.category.indexOf(category) === -1) {
-            selection.category.push(category);
+        let categoryToApply = [...selection.category]
+        if (categoryToApply.indexOf(category) === -1) {
+            categoryToApply.push(category);
         } else {
-            selection.category = selection.category.filter(cat => cat !== category);
+            categoryToApply = categoryToApply.filter(cat => cat !== category);
         }
-        setSelection({...selection, category: selection.category})
+        setSelection({...selection, category: categoryToApply})
     }
 
     return (
