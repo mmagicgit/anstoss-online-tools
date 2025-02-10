@@ -7,7 +7,7 @@ interface TableHeaderProps {
     onSort: (columnKey: string) => void
 }
 
-export default function TableHeader({sort, name, columnKey, onSort}: TableHeaderProps) {
+export default function PlayerTableHeader({sort, name, columnKey, onSort}: TableHeaderProps) {
     return (
         <th>
             <button className="btn-ghost hover:bg-base-100" onClick={() => onSort(columnKey)}>
