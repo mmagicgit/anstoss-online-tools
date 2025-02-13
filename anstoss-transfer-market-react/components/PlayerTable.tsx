@@ -61,7 +61,7 @@ export default function PlayerTable({players}: PlayerTableProps) {
                         })}</td>
                         <td className="text-right">{player.age}</td>
                         <td>{player.country}</td>
-                        <td className="text-right">{player.price.toLocaleString()}</td>
+                        <td className="text-right">{player.price.toLocaleString("de-DE")}</td>
                         <td className="text-right">{player.days}</td>
                     </tr>
                 ))}
