@@ -35,7 +35,7 @@ export default function PlayerTable({players}: PlayerTableProps) {
     }
 
     return (
-        <div className="overflow-x-auto relative max-w-2xl">
+        <div className="overflow-x-auto max-w-2xl">
             <table className="table table-xs">
                 <thead>
                 <tr>
