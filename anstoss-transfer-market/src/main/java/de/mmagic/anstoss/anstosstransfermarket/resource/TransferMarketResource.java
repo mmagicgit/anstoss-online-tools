@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/players")
+@RequestMapping("/player")
 public class TransferMarketResource {
 
     private final PlayerService playerService;
@@ -32,11 +32,12 @@ public class TransferMarketResource {
             @RequestParam(value = "ageFrom", required = false) Integer ageFrom,
             @RequestParam(value = "ageTo", required = false) Integer ageTo,
             @RequestParam(value = "maxPercent", required = false) Integer maxPercent,
-            @RequestParam(value = "maxAgePercent", required = false) Integer maxAgePercent) {
-        return toRestModel(playerService.search(positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, maxAgePercent));
+            @RequestParam(value = "category", required = false) List<String> categories
+    ) {
+        return toRestModel(playerService.search(positions == null ? List.of() : positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, categories == null ? List.of() : categories));
     }
 
-    @PostMapping(value = "/import", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/import", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PlayerRest> importPlayers() {
         playerService.importPlayers();
         return search();

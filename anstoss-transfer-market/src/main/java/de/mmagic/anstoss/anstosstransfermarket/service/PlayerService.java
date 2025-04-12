@@ -21,7 +21,7 @@ public class PlayerService {
         return playerStore.findAll();
     }
 
-    public List<Player> search(List<String> positions, Integer strengthFrom, Integer strengthTo, Integer ageFrom, Integer ageTo, Integer maxPercent, Integer maxAgePercent) {
+    public List<Player> search(List<String> positions, Integer strengthFrom, Integer strengthTo, Integer ageFrom, Integer ageTo, Integer maxPercent, List<String> categories) {
         return playerStore.search(
                 positions,
                 strengthFrom == null ? 0 : strengthFrom,
@@ -29,12 +29,13 @@ public class PlayerService {
                 ageFrom == null? 0 : ageFrom,
                 ageTo == null ? 50 : ageTo,
                 maxPercent == null ? -50 : maxPercent,
-                maxAgePercent == null ? -50: maxAgePercent
+                categories
         );
     }
 
     public void importPlayers() {
         List<Player> players = transferMarketImportService.search();
+        playerStore.removeAll();
         playerStore.addAll(players);
     }
 }
