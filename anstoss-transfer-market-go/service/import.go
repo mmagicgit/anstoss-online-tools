@@ -55,7 +55,7 @@ func (service *PlayerImportService) fetchPageLinks() ([]string, error) {
 	//content/getContent.php?dyn=transfers/spielersuche&erg=1&&idealpos[]=MD&idealpos[]=RV&idealpos[]=LV&idealpos[]=LIB&idealpos[]=LM&idealpos[]=RM&idealpos[]=ZM&idealpos[]=ST&wettbewerb_id=&land_id=&nachname=&vorname=&genauigkeit=1&staerke_min=&staerke_max=&alter_min=&alter_max=&starkerfuss=&eigens_plus=&eigens_char_plus=&spielerboerse=1&max_abloese=
 	path := "content/getContent.php?dyn=transfers/spielersuche&erg=1&&" +
 		positionParameters() +
-		"wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=&alter_min=&alter_max=30&spielerboerse=1"
+		"wettbewerb_id=&land_id=&genauigkeit=1&staerke_min=3&staerke_max=&alter_min=&alter_max=35&spielerboerse=1"
 
 	result, err := service.httpClient.Post(path)
 	if err != nil {
@@ -109,8 +109,11 @@ func (service *PlayerImportService) fetchAaw(aawLink string, playerIdString stri
 	if err != nil {
 		return nil, err
 	}
-	aawHtml := soup.HTMLParse(aawResponse)
+	if !strings.Contains(aawResponse, "table") {
+		return nil, nil
+	}
 
+	aawHtml := soup.HTMLParse(aawResponse)
 	var aawMultiMap = make(map[model.AawCategory][]int)
 	aawRows := aawHtml.FindStrict("table", "id", "s"+playerIdString).FindAllStrict("tr", "class", "hide")
 

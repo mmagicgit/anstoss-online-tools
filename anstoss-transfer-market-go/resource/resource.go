@@ -73,12 +73,22 @@ func (resource *PlayerResource) search(response http.ResponseWriter, request *ht
 	strengthTo, errStrengthTo := strconv.Atoi(request.URL.Query().Get("strengthTo"))
 	ageFrom, errAgeFrom := strconv.Atoi(request.URL.Query().Get("ageFrom"))
 	ageTo, errAgeTo := strconv.Atoi(request.URL.Query().Get("ageTo"))
-	maxPercent, errMaxPercent := strconv.Atoi(request.URL.Query().Get("maxPercent"))
+	country := request.URL.Query().Get("country")
+	maxPercentString := request.URL.Query().Get("maxPercent")
+	var (
+		maxPercent    int
+		errMaxPercent error
+	)
+	if maxPercentString == "" {
+		maxPercent = 0
+	} else {
+		maxPercent, errMaxPercent = strconv.Atoi(maxPercentString)
+	}
 	if err := errors.Join(errParse, errStrengthFrom, errStrengthTo, errAgeFrom, errAgeTo, errMaxPercent); err != nil {
 		http.Error(response, err.Error(), http.StatusBadRequest)
 		return
 	}
-	players, err := resource.service.Search(positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, categories)
+	players, err := resource.service.Search(positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, categories, country)
 	if err != nil {
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return

@@ -67,8 +67,18 @@ func (store *PlayerStore) Save(players *[]model.Player) error {
 	return nil
 }
 
-func (store *PlayerStore) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string) (*[]model.Player, error) {
-	step1 := bson.M{"$match": bson.M{"$and": []bson.M{{"age": bson.M{"$gte": ageFrom}}, {"age": bson.M{"$lte": ageTo}}, {"strength": bson.M{"$gte": strengthFrom}}, {"strength": bson.M{"$lte": strengthTo}}, {"position": bson.M{"$in": positions}}}}}
+func (store *PlayerStore) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string, country string) (*[]model.Player, error) {
+	conditions := []bson.M{
+		{"age": bson.M{"$gte": ageFrom}},
+		{"age": bson.M{"$lte": ageTo}},
+		{"strength": bson.M{"$gte": strengthFrom}},
+		{"strength": bson.M{"$lte": strengthTo}},
+		{"position": bson.M{"$in": positions}},
+	}
+	if country != "" {
+		conditions = append(conditions, bson.M{"country": country})
+	}
+	step1 := bson.M{"$match": bson.M{"$and": conditions}}
 	step2 := bson.M{"$addFields": bson.M{
 		"maxTRAININGPercent": bson.M{"$max": "$aaw.Training"},
 		"maxFITNESSPercent":  bson.M{"$max": "$aaw.Fitness"},

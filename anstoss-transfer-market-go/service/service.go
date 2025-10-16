@@ -41,7 +41,7 @@ func (service *PlayerService) ImportPlayers() (*[]model.Player, error) {
 	return players, nil
 }
 
-func (service *PlayerService) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string) (*[]model.Player, error) {
+func (service *PlayerService) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string, country string) (*[]model.Player, error) {
 	if positions == nil {
 		positions = []string{}
 	}
@@ -62,6 +62,7 @@ func (service *PlayerService) Search(positions []string, strengthFrom int, stren
 		If(ageTo == 0, 50, ageTo),
 		If(maxPercent == 0, -50, maxPercent),
 		categories,
+		country,
 	)
 }
 
