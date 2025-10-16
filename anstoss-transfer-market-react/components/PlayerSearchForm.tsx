@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {PlayerFormSelection, initialPlayerFormSelection} from "@/model/PlayerFormSelection";
+import {countries} from "@/model/Country";
 
 interface PlayerSearchFormProps {
     onSearch: (selection: PlayerFormSelection) => void
@@ -29,7 +30,7 @@ export default function PlayerSearchForm({onSearch}: PlayerSearchFormProps) {
     }
 
     return (
-        <div className="grid grid-cols-2 gap-2 max-w-xs">
+        <div className="grid grid-cols-2 gap-2 max-w-sm">
             <label className="form-control col-span-2">
                 <div className="label">
                     <span className="label-text text-xs">Position</span>
@@ -110,7 +111,7 @@ export default function PlayerSearchForm({onSearch}: PlayerSearchFormProps) {
             </label>
             <label className="form-control">
                 <div className="label">
-                    <span className="label-text text-xs">Max. AAW Prozentwert ≥</span>
+                    <span className="label-text text-xs">Max. Prozentwert ≥</span>
                 </div>
                 <select className="select select-bordered select-xs"
                         value={selection.percent}
@@ -119,6 +120,20 @@ export default function PlayerSearchForm({onSearch}: PlayerSearchFormProps) {
                     <option key="percent-inactive" value="-1"></option>
                     {[...Array(26).keys()].slice(5).map(value => (
                         <option key={"percent" + value}>{value}</option>
+                    ))}
+                </select>
+            </label>
+            <label className="form-control">
+                <div className="label">
+                    <span className="label-text text-xs">Land</span>
+                </div>
+                <select className="select select-bordered select-xs"
+                        value={selection.country}
+                        onChange={e => setSelection({...selection, country: e.target.value})}
+                >
+                    <option key="country-inactive" value=""></option>
+                    {countries.map(value => (
+                        <option key={"country" + value}>{value}</option>
                     ))}
                 </select>
             </label>

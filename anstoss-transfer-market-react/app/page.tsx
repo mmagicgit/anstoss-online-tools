@@ -22,7 +22,8 @@ export default function Home() {
             const strength = "&strengthFrom=" + selection.strengthFrom + "&strengthTo=" + selection.strengthTo;
             const age = "&ageFrom=" + selection.ageFrom + "&ageTo=" + selection.ageTo;
             const percent = selection.percent > 0 ? "&maxPercent=" + selection.percent : "";
-            const url = "https://mmagic.uber.space/" + "/player/search?" + positionString + categoryString + strength + age + percent;
+            const country = selection.country != "" ? "&country=" + selection.country : "";
+            const url = "https://mmagic.uber.space/" + "/player/search?" + positionString + categoryString + strength + age + percent + country;
             fetch(url)
                 .then(response => response.json())
                 .then(data => setPlayers(data))
@@ -30,7 +31,7 @@ export default function Home() {
             const delay =
                 (ms: number) => new Promise(res => setTimeout(res, ms));
             async function go() {
-                await delay(3000)
+                await delay(0)
                 setIsLoading(false)
             }
             go()

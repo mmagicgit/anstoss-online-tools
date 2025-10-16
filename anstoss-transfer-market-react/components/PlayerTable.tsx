@@ -35,8 +35,8 @@ export default function PlayerTable({players}: PlayerTableProps) {
     }
 
     return (
-        <div className="overflow-x-auto max-w-2xl">
-            <table className="table table-xs">
+        <div className="overflow-x-auto max-w-full">
+            <table className="table table-xs min-w-full table-auto">
                 <thead>
                 <tr>
                     <PlayerTableHeader sort={sort} name="Position" columnKey="position" onSort={toggleSortMode}/>
@@ -51,18 +51,18 @@ export default function PlayerTable({players}: PlayerTableProps) {
                 <tbody>
                 {getPlayers().map(player => (
                     <tr key={player.id} className="hover">
-                        <td>{player.position}</td>
+                        <td className="text-center">{player.position}</td>
                         <td><a className="link"
                                href={"https://www.anstoss-online.de/?do=spieler&spieler_id=" + player.id + "#"}>{player.name}</a>
                         </td>
-                        <td className="text-right">{player.strength.toLocaleString("en-EN", {
+                        <td className="text-center">{player.strength.toLocaleString("en-EN", {
                             minimumFractionDigits: 1,
                             maximumFractionDigits: 1
                         })}</td>
-                        <td className="text-right">{player.age}</td>
+                        <td className="text-center">{player.age}</td>
                         <td>{player.country}</td>
-                        <td className="text-right">{player.price.toLocaleString("de-DE")}</td>
-                        <td className="text-right">{player.days}</td>
+                        <td className="text-center">{player.price.toLocaleString("de-DE")}</td>
+                        <td className="text-center">{player.days}</td>
                     </tr>
                 ))}
                 </tbody>
