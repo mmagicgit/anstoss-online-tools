@@ -1,13 +1,16 @@
-import {useState} from "react";
-import {PlayerFormSelection, initialPlayerFormSelection} from "@/model/PlayerFormSelection";
+import {PlayerFormSelection} from "@/model/PlayerFormSelection";
 import {countries} from "@/model/Country";
 
+
 interface PlayerSearchFormProps {
-    onSearch: (selection: PlayerFormSelection) => void
+    selection: PlayerFormSelection
+    setSelection: (selection: PlayerFormSelection) => void
+    onSearch: () => void
+    onLink: () => void
+    onReset: () => void
 }
 
-export default function PlayerSearchForm({onSearch}: PlayerSearchFormProps) {
-    const [selection, setSelection] = useState<PlayerFormSelection>(initialPlayerFormSelection)
+export default function PlayerSearchForm({onSearch, setSelection, selection, onLink, onReset}: PlayerSearchFormProps) {
 
     function setPosition(position: string) {
         let positionToApply = [...selection.position]
@@ -140,12 +143,17 @@ export default function PlayerSearchForm({onSearch}: PlayerSearchFormProps) {
             <div></div>
             <div className="flex justify-center col-span-2 gap-1 mt-6">
                 <button className="btn btn-xs btn-active"
-                        onClick={() => onSearch(selection)}
+                        onClick={() => onSearch()}
                 >
                     Suchen
                 </button>
+                <button className="btn btn-xs btn-active"
+                        onClick={() => onLink()}
+                >
+                    Direkter Link
+                </button>
                 <button className="btn btn-xs btn-active" type="submit"
-                        onClick={() => setSelection(initialPlayerFormSelection)}
+                        onClick={() => onReset()}
                 >
                     Zurücksetzen
                 </button>

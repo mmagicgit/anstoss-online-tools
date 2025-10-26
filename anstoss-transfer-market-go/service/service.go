@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	supportedPositions = []string{"LIB", "MD", "LV", "RV", "ZM", "RM", "LM", "ST"}
+	supportedPositions  = []string{"LIB", "MD", "LV", "RV", "ZM", "RM", "LM", "ST"}
+	supportedCategories = []string{"TRAINING", "FITNESS", "EINSATZ", "ALTER"}
 )
 
 type PlayerService struct {
@@ -42,8 +43,8 @@ func (service *PlayerService) ImportPlayers() (*[]model.Player, error) {
 }
 
 func (service *PlayerService) Search(positions []string, strengthFrom int, strengthTo int, ageFrom int, ageTo int, maxPercent int, categories []string, country string) (*[]model.Player, error) {
-	if positions == nil {
-		positions = []string{}
+	if positions == nil || len(positions) == 0 {
+		positions = slices.Clone(supportedPositions)
 	}
 	if slices.Contains(positions, "LM") || slices.Contains(positions, "RM") {
 		positions = append(positions, "LM RM")
@@ -51,8 +52,8 @@ func (service *PlayerService) Search(positions []string, strengthFrom int, stren
 	if slices.Contains(positions, "LV") || slices.Contains(positions, "RV") {
 		positions = append(positions, "LV RV")
 	}
-	if categories == nil {
-		categories = []string{}
+	if categories == nil || len(categories) == 0 {
+		categories = slices.Clone(supportedCategories)
 	}
 	return service.store.Search(
 		positions,

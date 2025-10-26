@@ -66,9 +66,8 @@ func (resource *PlayerResource) getAll(response http.ResponseWriter, request *ht
 func (resource *PlayerResource) search(response http.ResponseWriter, request *http.Request) {
 	slog.Debug(fmt.Sprintf("%s %s", request.Method, request.URL))
 	response.Header().Set("Content-Type", "application/json")
-	errParse := request.ParseForm()
-	positions := request.Form["position"]
-	categories := request.Form["category"]
+	positions := request.URL.Query()["position"]
+	categories := request.URL.Query()["category"]
 	strengthFrom, errStrengthFrom := strconv.Atoi(request.URL.Query().Get("strengthFrom"))
 	strengthTo, errStrengthTo := strconv.Atoi(request.URL.Query().Get("strengthTo"))
 	ageFrom, errAgeFrom := strconv.Atoi(request.URL.Query().Get("ageFrom"))
@@ -84,17 +83,20 @@ func (resource *PlayerResource) search(response http.ResponseWriter, request *ht
 	} else {
 		maxPercent, errMaxPercent = strconv.Atoi(maxPercentString)
 	}
-	if err := errors.Join(errParse, errStrengthFrom, errStrengthTo, errAgeFrom, errAgeTo, errMaxPercent); err != nil {
+	if err := errors.Join(errStrengthFrom, errStrengthTo, errAgeFrom, errAgeTo, errMaxPercent); err != nil {
+		slog.Error(err.Error())
 		http.Error(response, err.Error(), http.StatusBadRequest)
 		return
 	}
 	players, err := resource.service.Search(positions, strengthFrom, strengthTo, ageFrom, ageTo, maxPercent, categories, country)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	err = json.NewEncoder(response).Encode(players)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(response, err.Error(), http.StatusInternalServerError)
 		return
 	}
